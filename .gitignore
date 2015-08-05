@@ -6,3 +6,9 @@ Debug/
 Release/
 *.exe
 *.s
+
+# More VS stuff
+*.sln
+*.sdf
+*.opensdf
+*.vs*
