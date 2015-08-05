@@ -1,0 +1,8 @@
+/build/
+*.idea
+CMakeLists.txt
+*.vcxproj*
+Debug/
+Release/
+*.exe
+*.s
