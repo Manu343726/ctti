@@ -30,7 +30,7 @@ int main()
 This was tested on both GCC 5.2.0 and Clang 3.6.2. It's fairly unstable (I'm currently working on it), and it leads 
 to ugly ICEs whenever the `constexpr` machinery fails. 
 
-### Current state: Bugs...
+#### Current state: Bugs...
 
 `ctti::type_id` comparison and hashing works correctly, but I'm trying to find a bug that 
 causes `type_ide::name()` to return empty or even corrupted strings. I'm sure there's something wrong with the
