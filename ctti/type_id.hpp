@@ -23,7 +23,7 @@ namespace ctti
             return name_.hash();
         }
 
-		// note: name().c_str() isn't null-terminated properly!
+        // note: name().c_str() isn't null-terminated properly!
         constexpr detail::string name() const
         {
             return name_;
@@ -50,9 +50,9 @@ namespace ctti
         template<typename T>
         constexpr ctti::type_id_t type_id()
         {
-			// one-liner required by MSVC :(
-			return detail::make_string(CTTI_PRETTY_FUNCTION).
-					template trim<CTTI_PRETTY_FUNCTION_LEFT, CTTI_PRETTY_FUNCTION_RIGHT>();
+            // one-liner required by MSVC :(
+            return detail::make_string(CTTI_PRETTY_FUNCTION).
+                    template trim<CTTI_PRETTY_FUNCTION_LEFT, CTTI_PRETTY_FUNCTION_RIGHT>();
         }
     }
 
@@ -86,7 +86,7 @@ namespace std
     {
         constexpr std::size_t operator()(const ctti::type_id_t& id) const
         {
-			// quiet warning about possible loss of data
+            // quiet warning about possible loss of data
             return std::size_t(id.hash());
         }
     };

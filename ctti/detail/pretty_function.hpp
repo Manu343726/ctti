@@ -14,11 +14,11 @@
     #define CTTI_PRETTY_FUNCTION_PREFIX "ctti::type_id_t ctti::detail::type_id() [T = "
     #define CTTI_PRETTY_FUNCTION_SUFFIX "]"
 #elif defined(_MSC_VER)
-	#define CTTI_PRETTY_FUNCTION __FUNCSIG__
-	#define CTTI_PRETTY_FUNCTION_PREFIX "struct ctti::type_id_t __cdecl ctti::detail::type_id<"
-	#define CTTI_PRETTY_FUNCTION_SUFFIX ">(void)"
+    #define CTTI_PRETTY_FUNCTION __FUNCSIG__
+    #define CTTI_PRETTY_FUNCTION_PREFIX "struct ctti::type_id_t __cdecl ctti::detail::type_id<"
+    #define CTTI_PRETTY_FUNCTION_SUFFIX ">(void)"
 #else
-	#error "No support for this compiler."
+    #error "No support for this compiler."
 #endif
 
 #define CTTI_PRETTY_FUNCTION_LEFT (sizeof(CTTI_PRETTY_FUNCTION_PREFIX) - 1)

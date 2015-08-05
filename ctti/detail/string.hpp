@@ -17,9 +17,9 @@ namespace ctti
         {
             template<std::size_t N>
             constexpr string(const char (&str)[N]) :
-				str_{str},
-				length_{N},
-				hash_{sid_hash(length_, str)}
+                str_{str},
+                length_{N},
+                hash_{sid_hash(length_, str)}
             {}
 
             constexpr string(const char* str, std::size_t length) :
@@ -33,7 +33,7 @@ namespace ctti
                 return hash_;
             }
 
-			// note: not necessarily null-terminated!
+            // note: not necessarily null-terminated!
             constexpr const char* c_str() const
             {
                 return str_;
@@ -49,29 +49,29 @@ namespace ctti
                 return str_[i];
             }
 
-			template <std::size_t Left>
+            template <std::size_t Left>
             constexpr string trim_left() const
             {
-				return string{str_ + Left, length_ - Left};
+                return string{str_ + Left, length_ - Left};
             }
 
-			template <std::size_t Right>
-			constexpr string trim_right() const
-			{
-				return string{str_, length_ - Right - 1};
-			}
+            template <std::size_t Right>
+            constexpr string trim_right() const
+            {
+                return string{str_, length_ - Right - 1};
+            }
 
-			template <std::size_t Left, std::size_t Right>
-			constexpr string trim() const
-			{
-				return trim_left<Left>().trim_right<Right>();
-			}
+            template <std::size_t Left, std::size_t Right>
+            constexpr string trim() const
+            {
+                return trim_left<Left>().trim_right<Right>();
+            }
 
             friend std::ostream& operator<<(std::ostream& os, const string& str)
             {
-				for (std::size_t i = 0u; i != str.length_; ++i)
-					os << str[i];
-				return os;
+                for (std::size_t i = 0u; i != str.length_; ++i)
+                    os << str[i];
+                return os;
             }
 
         private:
