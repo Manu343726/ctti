@@ -1,5 +1,7 @@
 # CTTI
 
+[![Join the chat at https://gitter.im/Manu343726/ctti](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/Manu343726/ctti?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 Compile Time Type Information for the C++ programming language.
 
 ## Background
