@@ -42,35 +42,10 @@ namespace ctti
         detail::string name_;
     };
 
+    using type_index = type_id_t; // To mimic std::type_index when using maps
+
     namespace detail
     {
-        template<char... Chars>
-        struct ct_string
-        {
-            static constexpr const char value[] = {Chars..., '\0'};
-        };
-
-        template<char... Chars>
-        constexpr const char ct_string<Chars...>::value[];
-
-        // The trick is to be able to discard both the preffix and suffix of
-        // __PRETTY_FUNCTION__ string, getting T name only.
-        // This is done in two steps:
-        //
-        //  - type_id() function bellow gets T name length through CTTI_PRETTY_PRINT_LENGTH macro.
-        //  - Then __PRETTY_FUNCTION__ is computed again, using it to fill a variadic char string
-        //    template which will hold the T name.
-        template<typename T, std::size_t... Is, std::size_t N>
-        constexpr const char* parse_name(const char (&pretty_function)[N], std::index_sequence<Is...>)
-        {
-            constexpr std::size_t fn_length = 4 + sizeof("const char* parse_name(const char (&pretty_function)[N], std::index_sequence<Is...>)");
-            using str = ct_string<CTTI_PRETTY_FUNCTION[fn_length + Is]...>;
-
-            return str::value;
-        }
-
-        // Since _() is a template, __PRETTY_FUNCTION__ string varies with template parameter,
-        // pretty function is usually something like "hash_t _<T>() [with T = *type here*]".
         template<typename T>
         constexpr ctti::type_id_t type_id()
         {
@@ -81,19 +56,27 @@ namespace ctti
         }
     }
 
+    /**
+     * Returns type information at compile-time for a value
+     * of type T. Decay is applied to argument type first, use
+     * ctti::type_id<decltype(arg)>() to conserve references and cv qualifiers.
+     */
     template<typename T>
     constexpr type_id_t type_id(T&&)
     {
         return detail::type_id<typename std::decay<T>::type>();
     }
 
+    /**
+     * Returns type information at compile-time for type T.
+     */
     template<typename T>
     constexpr type_id_t type_id()
     {
-        return detail::type_id<typename std::decay<T>::type>();
+        return detail::type_id<T>();
     }
 
-    //static_assert(type_id<void>() == type_id<void>(), "ctti::type_id_t instances must be constant expressions");
+    static_assert(type_id<void>() == type_id<void>(), "ctti::type_id_t instances must be constant expressions");
 }
 
 namespace std
@@ -101,7 +84,7 @@ namespace std
     template<>
     struct hash<ctti::type_id_t>
     {
-        std::size_t operator()(const ctti::type_id_t& id) const
+        constexpr std::size_t operator()(const ctti::type_id_t& id) const
         {
             return id.hash();
         }
