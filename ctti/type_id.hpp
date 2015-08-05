@@ -76,7 +76,8 @@ namespace ctti
         return detail::type_id<T>();
     }
 
-    static_assert(type_id<void>() == type_id<void>(), "ctti::type_id_t instances must be constant expressions");
+    //assert commented out, GCC 5.2.0 ICE here.
+    //static_assert(type_id<void>() == type_id<void>(), "ctti::type_id_t instances must be constant expressions");
 }
 
 namespace std

@@ -64,7 +64,8 @@ namespace ctti
             template <std::size_t Left, std::size_t Right>
             constexpr string trim() const
             {
-                return trim_left<Left>().trim_right<Right>();
+                //.teplate neded by clang 3.6.2, GCC 5.2.0 does not
+                return trim_left<Left>().template trim_right<Right>();
             }
 
             friend std::ostream& operator<<(std::ostream& os, const string& str)
