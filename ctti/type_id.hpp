@@ -51,8 +51,7 @@ namespace ctti
         constexpr ctti::type_id_t type_id()
         {
             // one-liner required by MSVC :(
-            return detail::make_string(CTTI_PRETTY_FUNCTION).
-                    template trim<CTTI_PRETTY_FUNCTION_LEFT, CTTI_PRETTY_FUNCTION_RIGHT>();
+            return detail::make_string(CTTI_PRETTY_FUNCTION).template substr<CTTI_PRETTY_FUNCTION_BEGIN, CTTI_PRETTY_FUNCTION_END>();
         }
     }
 

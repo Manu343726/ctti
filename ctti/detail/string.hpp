@@ -6,27 +6,28 @@
 #define CTTI_STRING_HPP
 
 #include <ostream>
+#include <array>
 
 #include "hash.hpp"
+#include "array.hpp"
 
 namespace ctti
 {
     namespace detail
     {
+#ifdef CTTI_STRING_MAX_LENGTH
+		constexpr std::size_t max_string_length = CTTI_STRING_MAX_LENGTH;
+#else
+		constexpr std::size_t max_string_length = 256;
+#endif
+
         struct string
         {
-            template<std::size_t N>
-            constexpr string(const char (&str)[N]) :
-                str_{str},
-                length_{N},
-                hash_{sid_hash(length_, str)}
-            {}
-
-            constexpr string(const char* str, std::size_t length) :
-                str_{str},
-                length_{length},
-                hash_{sid_hash(length, str)}
-            {}
+			template<std::size_t begin, std::size_t end>
+			static constexpr string from_c_str(const char* str)
+			{
+				return string{ str + begin, std::make_index_sequence<end - begin - 1>{}, std::make_index_sequence<max_string_length - (end - begin - 1)>{} };
+			}
 
             constexpr hash_t hash() const
             {
@@ -36,7 +37,7 @@ namespace ctti
             // note: not necessarily null-terminated!
             constexpr const char* c_str() const
             {
-                return str_;
+                return str_.data();
             }
 
             constexpr std::size_t length() const
@@ -49,23 +50,10 @@ namespace ctti
                 return str_[i];
             }
 
-            template <std::size_t Left>
-            constexpr string trim_left() const
+            template <std::size_t Begin, std::size_t End>
+            constexpr string substr() const
             {
-                return string{str_ + Left, length_ - Left};
-            }
-
-            template <std::size_t Right>
-            constexpr string trim_right() const
-            {
-                return string{str_, length_ - Right - 1};
-            }
-
-            template <std::size_t Left, std::size_t Right>
-            constexpr string trim() const
-            {
-                //.teplate neded by clang 3.6.2, GCC 5.2.0 does not
-                return trim_left<Left>().template trim_right<Right>();
+				return from_c_str<Begin, End>(str_.data());
             }
 
             friend std::ostream& operator<<(std::ostream& os, const string& str)
@@ -76,15 +64,24 @@ namespace ctti
             }
 
         private:
-            const char* str_;
+			const ctti::detail::array<char, max_string_length> str_;
             std::size_t length_;
             hash_t hash_;
+
+			template<std::size_t... Is, std::size_t... Js>
+			constexpr string(const char* str, std::index_sequence<Is...>, std::index_sequence<Js...>) :
+				length_{ sizeof...(Is) },
+				hash_{ sid_hash(sizeof...(Is)+1, str) },
+				str_{ str[Is]..., (Js, '\0')... }
+			{
+				static_assert(sizeof...(Is)+sizeof...(Js) == max_string_length, "");
+			}
         };
 
         template<std::size_t N>
         constexpr string make_string(const char (&str)[N])
         {
-            return {str};
+            return string::from_c_str<0,N>(str);
         }
     }
 }
