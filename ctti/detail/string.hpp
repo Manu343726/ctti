@@ -20,21 +20,32 @@ namespace ctti
 #else
 		constexpr std::size_t max_string_length = 256;
 #endif
-
         struct string
         {
-			template<std::size_t begin, std::size_t end>
-			static constexpr string from_c_str(const char* str)
-			{
-				return string{ str + begin, std::make_index_sequence<end - begin - 1>{}, std::make_index_sequence<max_string_length - (end - begin - 1)>{} };
-			}
+            template<std::size_t N>
+            constexpr string(detail::array<char,N> arr) :
+                string{arr.data(), std::make_index_sequence<N>{}, std::make_index_sequence<max_string_length - N>{}}
+            {}
+
+            template<std::size_t N>
+            constexpr string(const char (&str)[N]) :
+                string{str, std::make_index_sequence<N>{}, std::make_index_sequence<max_string_length - N>{}}
+            {}
+
+            template<std::size_t... Is, std::size_t... Js>
+            constexpr string(const char* str, std::index_sequence<Is...>, std::index_sequence<Js...>) :
+                    length_{ sizeof...(Is) },
+                    hash_{ sid_hash(sizeof...(Is), str) },
+                    str_( str[Is]..., (Js, '\0')... )
+            {
+                static_assert(sizeof...(Is)+sizeof...(Js) == max_string_length, "");
+            }
 
             constexpr hash_t hash() const
             {
                 return hash_;
             }
 
-            // note: not necessarily null-terminated!
             constexpr const char* c_str() const
             {
                 return str_.data();
@@ -53,7 +64,7 @@ namespace ctti
             template <std::size_t Begin, std::size_t End>
             constexpr string substr() const
             {
-				return from_c_str<Begin, End>(str_.data());
+				return {str_.subarray<Begin,End>()};
             }
 
             friend std::ostream& operator<<(std::ostream& os, const string& str)
@@ -67,21 +78,18 @@ namespace ctti
 			const ctti::detail::array<char, max_string_length> str_;
             std::size_t length_;
             hash_t hash_;
-
-			template<std::size_t... Is, std::size_t... Js>
-			constexpr string(const char* str, std::index_sequence<Is...>, std::index_sequence<Js...>) :
-				length_{ sizeof...(Is) },
-				hash_{ sid_hash(sizeof...(Is)+1, str) },
-				str_{ str[Is]..., (Js, '\0')... }
-			{
-				static_assert(sizeof...(Is)+sizeof...(Js) == max_string_length, "");
-			}
         };
+
+        template<std::size_t begin, std::size_t end>
+        constexpr string make_string(const char* str)
+        {
+            return string{ str + begin, std::make_index_sequence<end - begin - 1>{}, std::make_index_sequence<max_string_length - (end - begin - 1)>{} };
+        }
 
         template<std::size_t N>
         constexpr string make_string(const char (&str)[N])
         {
-            return string::from_c_str<0,N>(str);
+            return make_string<0,N>(str);
         }
     }
 }

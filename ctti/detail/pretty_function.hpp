@@ -11,7 +11,7 @@
     #define CTTI_PRETTY_FUNCTION_SUFFIX "]"
 #elif defined(__GNUC__) && !defined(__clang__)
     #define CTTI_PRETTY_FUNCTION __PRETTY_FUNCTION__
-    #define CTTI_PRETTY_FUNCTION_PREFIX "ctti::type_id_t ctti::detail::type_id() [T = "
+    #define CTTI_PRETTY_FUNCTION_PREFIX "constexpr ctti::type_id_t ctti::detail::type_id() [with T = "
     #define CTTI_PRETTY_FUNCTION_SUFFIX "]"
 #elif defined(_MSC_VER)
     #define CTTI_PRETTY_FUNCTION __FUNCSIG__
@@ -24,6 +24,6 @@
 #define CTTI_PRETTY_FUNCTION_LEFT (sizeof(CTTI_PRETTY_FUNCTION_PREFIX) - 1)
 #define CTTI_PRETTY_FUNCTION_RIGHT (sizeof(CTTI_PRETTY_FUNCTION_SUFFIX) - 1)
 #define CTTI_PRETTY_FUNCTION_BEGIN CTTI_PRETTY_FUNCTION_LEFT
-#define CTTI_PRETTY_FUNCTION_END (sizeof(CTTI_PRETTY_FUNCTION) - CTTI_PRETTY_FUNCTION_RIGHT)
+#define CTTI_PRETTY_FUNCTION_END (sizeof(CTTI_PRETTY_FUNCTION) - sizeof(CTTI_PRETTY_FUNCTION_SUFFIX))
 
 #endif //CTTI_PRETTY_FUNCTION_HPP

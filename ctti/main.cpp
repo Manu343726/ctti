@@ -7,8 +7,14 @@
 
 int main()
 {
-    static_assert(ctti::type_id<int>() == ctti::type_id(1), "???");
-    static_assert(ctti::type_id<int>() != ctti::type_id<int*>(), "???");
+    constexpr ctti::detail::array<char,6> hello = "hello";
+    constexpr ctti::detail::array<char,6> world{'w','o','r','l','d'};
+    constexpr ctti::detail::string str = "hello world!!!";
+    constexpr ctti::detail::string str2 = str.substr<6,11>();
+    constexpr auto arr = ctti::detail::make_array("hello world!!!");
+    constexpr auto world_arr = arr.subarray<6,11>();
 
-    std::cout << ctti::type_id<int>().name() << std::endl;
+    std::cout << hello.data() << "\n";
+    std::cout << str2.c_str() << "\n";
+    std::cout << ctti::type_id<struct foo>().name().c_str() << "\n";
 }
