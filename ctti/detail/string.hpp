@@ -83,6 +83,8 @@ namespace ctti
         template<std::size_t begin, std::size_t end>
         constexpr string make_string(const char* str)
         {
+            static_assert(end -  begin <= max_string_length, "Fatal error: Range exceeds maximum string length");
+
             return string{ str + begin, std::make_index_sequence<end - begin - 1>{}, std::make_index_sequence<max_string_length - (end - begin - 1)>{} };
         }
 
