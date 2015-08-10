@@ -22,24 +22,12 @@ namespace ctti
 #endif
         struct string
         {
-            template<std::size_t N>
-            constexpr string(detail::array<char,N> arr) :
-                string{arr.data(), std::make_index_sequence<N>{}, std::make_index_sequence<max_string_length - N>{}}
-            {}
-
-            template<std::size_t N>
-            constexpr string(const char (&str)[N]) :
-                string{str, std::make_index_sequence<N>{}, std::make_index_sequence<max_string_length - N>{}}
-            {}
-
-            template<std::size_t... Is, std::size_t... Js>
-            constexpr string(const char* str, std::index_sequence<Is...>, std::index_sequence<Js...>) :
-                    length_{ sizeof...(Is) },
-                    hash_{ sid_hash(sizeof...(Is), str) },
-                    str_( str[Is]..., (Js, '\0')... )
-            {
-                static_assert(sizeof...(Is)+sizeof...(Js) == max_string_length, "");
-            }
+            template<typename Head, typename... Tail>
+			explicit constexpr string(Head&& head, Tail&&... tail) :
+				str_{std::forward<Head>(head), std::forward<Tail>(tail)...},
+				length_{sizeof...(Tail) + 1},
+				hash_{ sid_hash(length_, str_.data()) }
+			{}
 
             constexpr hash_t hash() const
             {
@@ -62,10 +50,7 @@ namespace ctti
             }
 
             template <std::size_t Begin, std::size_t End>
-            constexpr string substr() const
-            {
-				return {str_.subarray<Begin,End>()};
-            }
+			constexpr string substr() const;
 
             friend std::ostream& operator<<(std::ostream& os, const string& str)
             {
@@ -80,12 +65,21 @@ namespace ctti
             hash_t hash_;
         };
 
+		namespace
+		{
+			template<std::size_t... Is>
+			constexpr string make_string(const char* str, std::index_sequence<Is...>)
+			{
+				return string(str[Is]..., '\0');
+			}
+		}
+
         template<std::size_t begin, std::size_t end>
         constexpr string make_string(const char* str)
         {
             static_assert(end -  begin <= max_string_length, "Fatal error: Range exceeds maximum string length");
 
-            return string{ str + begin, std::make_index_sequence<end - begin - 1>{}, std::make_index_sequence<max_string_length - (end - begin - 1)>{} };
+            return make_string( str + begin, std::make_index_sequence<end - begin - 1>{} );
         }
 
         template<std::size_t N>
@@ -93,6 +87,18 @@ namespace ctti
         {
             return make_string<0,N>(str);
         }
+		
+		template<std::size_t N>
+		constexpr string make_string(ctti::detail::array<char,N> arr)
+        {
+			return make_string<0, N>(arr.data());
+        }
+
+		template <std::size_t Begin, std::size_t End>
+		constexpr string string::substr() const
+		{
+			return make_string(str_.subarray<Begin, End>());
+		}
     }
 }
 
