@@ -1,14 +1,9 @@
-//
-// Created by manu343726 on 4/08/15.
-//
-
 #include "type_id.hpp"
 #include <iostream>
 
 int main()
 {
-    static_assert(ctti::type_id<int>() == ctti::type_id(1), "???");
-    static_assert(ctti::type_id<int>() != ctti::type_id<int*>(), "???");
+    static_assert(ctti::detail::make_array("hello").size() != ctti::detail::make_array("?").size(), "???");
 
-    std::cout << ctti::type_id<int>().name() << std::endl;
+	std::cout << ctti::type_id(std::cout).name() << "\n";
 }

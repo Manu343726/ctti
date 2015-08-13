@@ -6,37 +6,37 @@
 #define CTTI_STRING_HPP
 
 #include <ostream>
+#include <array>
 
 #include "hash.hpp"
+#include "array.hpp"
 
 namespace ctti
 {
     namespace detail
     {
+#ifdef CTTI_STRING_MAX_LENGTH
+		constexpr std::size_t max_string_length = CTTI_STRING_MAX_LENGTH;
+#else
+		constexpr std::size_t max_string_length = 256;
+#endif
         struct string
         {
-            template<std::size_t N>
-            constexpr string(const char (&str)[N]) :
-                str_{str},
-                length_{N},
-                hash_{sid_hash(length_, str)}
-            {}
-
-            constexpr string(const char* str, std::size_t length) :
-                str_{str},
-                length_{length},
-                hash_{sid_hash(length, str)}
-            {}
+            template<typename Head, typename... Tail>
+			explicit constexpr string(Head&& head, Tail&&... tail) :
+				str_{std::forward<Head>(head), std::forward<Tail>(tail)...},
+				length_{sizeof...(Tail) + 1},
+				hash_{ sid_hash(length_, str_.data()) }
+			{}
 
             constexpr hash_t hash() const
             {
                 return hash_;
             }
 
-            // note: not necessarily null-terminated!
             constexpr const char* c_str() const
             {
-                return str_;
+                return str_.data();
             }
 
             constexpr std::size_t length() const
@@ -49,24 +49,8 @@ namespace ctti
                 return str_[i];
             }
 
-            template <std::size_t Left>
-            constexpr string trim_left() const
-            {
-                return string{str_ + Left, length_ - Left};
-            }
-
-            template <std::size_t Right>
-            constexpr string trim_right() const
-            {
-                return string{str_, length_ - Right - 1};
-            }
-
-            template <std::size_t Left, std::size_t Right>
-            constexpr string trim() const
-            {
-                //.teplate neded by clang 3.6.2, GCC 5.2.0 does not
-                return trim_left<Left>().template trim_right<Right>();
-            }
+            template <std::size_t Begin, std::size_t End>
+			constexpr string substr() const;
 
             friend std::ostream& operator<<(std::ostream& os, const string& str)
             {
@@ -76,16 +60,45 @@ namespace ctti
             }
 
         private:
-            const char* str_;
+			const ctti::detail::array<char, max_string_length> str_;
             std::size_t length_;
             hash_t hash_;
         };
 
+		namespace
+		{
+			template<std::size_t... Is>
+			constexpr string make_string(const char* str, std::index_sequence<Is...>)
+			{
+				return string(str[Is]..., '\0');
+			}
+		}
+
+        template<std::size_t begin, std::size_t end>
+        constexpr string make_string(const char* str)
+        {
+            static_assert(end -  begin <= max_string_length, "Fatal error: Range exceeds maximum string length");
+
+            return make_string( str + begin, std::make_index_sequence<end - begin - 1>{} );
+        }
+
         template<std::size_t N>
         constexpr string make_string(const char (&str)[N])
         {
-            return {str};
+            return make_string<0,N>(str);
         }
+		
+		template<std::size_t N>
+		constexpr string make_string(ctti::detail::array<char,N> arr)
+        {
+			return make_string<0, N>(arr.data());
+        }
+
+		template <std::size_t Begin, std::size_t End>
+		constexpr string string::substr() const
+		{
+			return make_string(str_.subarray<Begin, End>());
+		}
     }
 }
 
