@@ -29,18 +29,7 @@ int main()
 
 ## Support and current status
 
-This was tested on Visual Studio 2015, GCC 5.2.0 and Clang 3.6.2. It's fairly unstable (We are currently working on it), and it leads
-to ugly ICEs whenever the `constexpr` machinery fails.
-
-#### Current state: Bugs...
-
-Currently you cannot access to the raw `constexpr` string pointer of type names, instead you should work with `ctti::detail::string`  constexpr class. Because the way type names are computed, these strings are not correctly null-terminated. Note `ctti::detail::string` has the usual `operator<<(std::ostream&)` for working with output streams. Use it to print type names and convert to `std::string` at runtime:
-
-``` cpp
-std::cout << ctti::type_id<int>().name() << std::endl;
-```
-
-See [#5](https://github.com/Manu343726/ctti/issues/5).
+This was tested on Visual Studio 2015, GCC 5.2.0, MinGW GCC 5.1, Clang 3.6.2, and cygwin Clang 3.5.2.
 
 ## Acknowledgments
 
