@@ -1,6 +1,5 @@
 /build/
 *.idea
-CMakeLists.txt
 *.vcxproj*
 Debug/
 Release/
