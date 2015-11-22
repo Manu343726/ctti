@@ -21,9 +21,20 @@
     #error "No support for this compiler."
 #endif
 
+/*
+ *                                                            [begin    end)
+ *                                                               |       |
+ *                                                               v       v
+ * +--------------------------------------------------------------------------+
+ * | constexpr ctti::type_id_t ctti::detail::type_id() [with T = Typename]    |
+ * +--------------------------------------------------------------------------+
+ *  <-----------------------------------------------------------><------><---->
+ *                                prefix                           name  suffix
+ */
+
 #define CTTI_PRETTY_FUNCTION_LEFT (sizeof(CTTI_PRETTY_FUNCTION_PREFIX) - 1)
 #define CTTI_PRETTY_FUNCTION_RIGHT (sizeof(CTTI_PRETTY_FUNCTION_SUFFIX) - 1)
 #define CTTI_PRETTY_FUNCTION_BEGIN CTTI_PRETTY_FUNCTION_LEFT
-#define CTTI_PRETTY_FUNCTION_END (sizeof(CTTI_PRETTY_FUNCTION) - sizeof(CTTI_PRETTY_FUNCTION_SUFFIX))
+#define CTTI_PRETTY_FUNCTION_END (sizeof(CTTI_PRETTY_FUNCTION) - (sizeof(CTTI_PRETTY_FUNCTION_SUFFIX) - 1))
 
 #endif //CTTI_PRETTY_FUNCTION_HPP
