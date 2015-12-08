@@ -18,6 +18,8 @@ namespace ctti
             name_{name}
         {}
 
+        type_id_t& operator=(const type_id_t&) = default;
+
         constexpr detail::hash_t hash() const
         {
             return name_.hash();
@@ -58,7 +60,7 @@ namespace ctti
     /**
      * Returns type information at compile-time for a value
      * of type T. Decay is applied to argument type first, use
-     * ctti::type_id<decltype(arg)>() to conserve references and cv qualifiers.
+     * ctti::type_id<decltype(arg)>() to preserve references and cv qualifiers.
      */
     template<typename T>
     constexpr type_id_t type_id(T&&)

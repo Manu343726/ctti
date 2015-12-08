@@ -72,7 +72,7 @@ namespace ctti
 		    */
 
 		private:
-			const T data_[Size];
+			T data_[Size];
 		};
 
 		namespace

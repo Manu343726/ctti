@@ -48,6 +48,8 @@ if(NOT MSVC)
 	set(CTTI_GLOBAL_ALL_COMPILE_OPTIONS -std=c++14)
 endif()
 
+include_directories(include)
+
 
 if(CTTI_BUILD_TESTS)
 	add_subdirectory(tests)
