@@ -79,7 +79,7 @@ namespace ctti
         template<typename T>
         constexpr ctti::type_id_t type_id()
         {
-            static_assert(CTTI_PRETTY_FUNCTION_END - CTTI_PRETTY_FUNCTION_BEGIN <= max_string_length, CTTI_PRETTY_FUNCTION);
+            static_assert(CTTI_PRETTY_FUNCTION_END - CTTI_PRETTY_FUNCTION_BEGIN <= max_string_length, "CTTI_PRETTY_FUNCTION out of range");
 
             // one-liner required by MSVC :(
             return detail::make_string<CTTI_PRETTY_FUNCTION_BEGIN, CTTI_PRETTY_FUNCTION_END>(CTTI_PRETTY_FUNCTION);
