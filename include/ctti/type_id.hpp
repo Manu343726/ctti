@@ -45,15 +45,51 @@ namespace ctti
         detail::string name_;
     };
 
-    using type_index = type_id_t; // To mimic std::type_index when using maps
+    struct unnamed_type_id_t
+    {
+        constexpr unnamed_type_id_t(const detail::hash_t hash) :
+            _hash{hash}
+        {}
+
+        unnamed_type_id_t& operator=(const unnamed_type_id_t&) = default;
+
+        constexpr detail::hash_t hash() const
+        {
+			return _hash;
+        }
+
+        friend constexpr bool operator==(const unnamed_type_id_t& lhs, const unnamed_type_id_t& rhs)
+        {
+            return lhs.hash() == rhs.hash();
+        }
+
+        friend constexpr bool operator!=(const unnamed_type_id_t& lhs, const unnamed_type_id_t& rhs)
+        {
+            return !(lhs == rhs);
+        }
+
+    private:
+        detail::hash_t _hash;
+    };
+
+    using type_index = unnamed_type_id_t; // To mimic std::type_index when using maps
 
     namespace detail
     {
         template<typename T>
         constexpr ctti::type_id_t type_id()
         {
+            static_assert(CTTI_PRETTY_FUNCTION_END - CTTI_PRETTY_FUNCTION_BEGIN <= max_string_length, CTTI_PRETTY_FUNCTION);
+
             // one-liner required by MSVC :(
-            return detail::make_string(CTTI_PRETTY_FUNCTION).template substr<CTTI_PRETTY_FUNCTION_BEGIN, CTTI_PRETTY_FUNCTION_END>();
+            return detail::make_string<CTTI_PRETTY_FUNCTION_BEGIN, CTTI_PRETTY_FUNCTION_END>(CTTI_PRETTY_FUNCTION);
+        }
+
+        template<typename T>
+        constexpr ctti::unnamed_type_id_t unnamed_type_id()
+        {
+            // one-liner required by MSVC :(
+            return sid_hash(CTTI_PRETTY_FUNCTION_END - CTTI_PRETTY_FUNCTION_BEGIN, CTTI_PRETTY_FUNCTION + CTTI_PRETTY_FUNCTION_BEGIN);
         }
     }
 
@@ -75,6 +111,26 @@ namespace ctti
     constexpr type_id_t type_id()
     {
         return detail::type_id<T>();
+    }
+
+    /**
+     * Returns unnamed type information at compile-time for a value
+     * of type T. Decay is applied to argument type first, use
+     * ctti::type_id<decltype(arg)>() to preserve references and cv qualifiers.
+     */
+    template<typename T>
+    constexpr unnamed_type_id_t unnamed_type_id(T&&)
+    {
+        return detail::unnamed_type_id<typename std::decay<T>::type>();
+    }
+
+    /**
+     * Returns unnamed type information at compile-time for type T.
+     */
+    template<typename T>
+    constexpr unnamed_type_id_t unnamed_type_id()
+    {
+        return detail::unnamed_type_id<T>();
     }
 
     //assert commented out, GCC 5.2.0 ICE here.
