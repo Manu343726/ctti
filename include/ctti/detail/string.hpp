@@ -18,7 +18,7 @@ namespace ctti
 #ifdef CTTI_STRING_MAX_LENGTH
 		constexpr std::size_t max_string_length = CTTI_STRING_MAX_LENGTH;
 #else
-		constexpr std::size_t max_string_length = 1024;
+		constexpr std::size_t max_string_length = 256;
 #endif
         struct string
         {
