@@ -10,6 +10,18 @@
 #include "detail/pretty_function.hpp"
 #include "detail/string.hpp"
 
+#ifdef CTTI_DEBUG_ID_FUNCTIONS
+#include <iostream>
+#include <string>
+
+#ifndef CTTI_CONSTEXPR_ID
+#define CTTI_CONSTEXPR_ID
+#endif
+#else
+#ifndef CTTI_CONSTEXPR_ID
+#define CTTI_CONSTEXPR_ID constexpr
+#endif
+#endif
 namespace ctti
 {
     struct type_id_t
@@ -77,19 +89,41 @@ namespace ctti
     namespace detail
     {
         template<typename T>
-        constexpr ctti::type_id_t type_id()
+		CTTI_CONSTEXPR_ID ctti::type_id_t type_id()
         {
-            static_assert(CTTI_PRETTY_FUNCTION_END - CTTI_PRETTY_FUNCTION_BEGIN <= max_string_length, "CTTI_PRETTY_FUNCTION out of range");
+            static_assert(CTTI_TYPE_ID_PRETTY_FUNCTION_END - CTTI_TYPE_ID_PRETTY_FUNCTION_BEGIN <= max_string_length, "CTTI_PRETTY_FUNCTION out of range");
 
+#ifdef CTTI_DEBUG_ID_FUNCTIONS
+			std::string name{ CTTI_TYPE_ID_PRETTY_FUNCTION + CTTI_TYPE_ID_PRETTY_FUNCTION_BEGIN, CTTI_TYPE_ID_PRETTY_FUNCTION_END - CTTI_TYPE_ID_PRETTY_FUNCTION_BEGIN - 1};
+
+			std::cout << "PRETTY_FUNCTION: " << CTTI_TYPE_ID_PRETTY_FUNCTION << std::endl;
+			std::cout << "Range: [" << CTTI_TYPE_ID_PRETTY_FUNCTION_BEGIN << "," << CTTI_TYPE_ID_PRETTY_FUNCTION_END << ")" << std::endl;
+			std::cout << "Name: " << name << std::endl;
+#endif
             // one-liner required by MSVC :(
-            return detail::make_string<CTTI_PRETTY_FUNCTION_BEGIN, CTTI_PRETTY_FUNCTION_END>(CTTI_PRETTY_FUNCTION);
+            return detail::make_string<CTTI_TYPE_ID_PRETTY_FUNCTION_BEGIN, CTTI_TYPE_ID_PRETTY_FUNCTION_END>(CTTI_TYPE_ID_PRETTY_FUNCTION);
         }
 
         template<typename T>
-        constexpr ctti::unnamed_type_id_t unnamed_type_id()
+		CTTI_CONSTEXPR_ID ctti::unnamed_type_id_t unnamed_type_id()
         {
             // one-liner required by MSVC :(
-            return sid_hash(CTTI_PRETTY_FUNCTION_END - CTTI_PRETTY_FUNCTION_BEGIN, CTTI_PRETTY_FUNCTION + CTTI_PRETTY_FUNCTION_BEGIN);
+			static_assert(CTTI_UNNAMED_TYPE_ID_PRETTY_FUNCTION_BEGIN < CTTI_UNNAMED_TYPE_ID_PRETTY_FUNCTION_END, "CTTI unnamed type id wrong range");
+
+#ifdef CTTI_DEBUG_ID_FUNCTIONS
+			std::string name{ CTTI_UNNAMED_TYPE_ID_PRETTY_FUNCTION + CTTI_UNNAMED_TYPE_ID_PRETTY_FUNCTION_BEGIN, CTTI_UNNAMED_TYPE_ID_PRETTY_FUNCTION_END - CTTI_UNNAMED_TYPE_ID_PRETTY_FUNCTION_BEGIN - 1};
+
+			std::cout << "PRETTY_FUNCTION: " << CTTI_UNNAMED_TYPE_ID_PRETTY_FUNCTION << std::endl;
+			std::cout << "Range: [" << CTTI_UNNAMED_TYPE_ID_PRETTY_FUNCTION_BEGIN << "," << CTTI_UNNAMED_TYPE_ID_PRETTY_FUNCTION_END << ")" << std::endl;
+			std::cout << "Name: " << name << std::endl;
+			std::cout << "Name size: " << name.size() << std::endl;
+			std::cout << "Name size (computed from range): " << (CTTI_UNNAMED_TYPE_ID_PRETTY_FUNCTION_END - CTTI_UNNAMED_TYPE_ID_PRETTY_FUNCTION_BEGIN - 1) << std::endl;
+
+			return sid_hash(name.size(), name.data());
+#else
+			return sid_hash(CTTI_UNNAMED_TYPE_ID_PRETTY_FUNCTION_END - CTTI_UNNAMED_TYPE_ID_PRETTY_FUNCTION_BEGIN - 1, CTTI_UNNAMED_TYPE_ID_PRETTY_FUNCTION + CTTI_UNNAMED_TYPE_ID_PRETTY_FUNCTION_BEGIN);
+#endif
+            
         }
     }
 

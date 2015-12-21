@@ -25,7 +25,7 @@ namespace ctti
             template<typename Head, typename... Tail>
 			explicit constexpr string(Head&& head, Tail&&... tail) :
 				str_{std::forward<Head>(head), std::forward<Tail>(tail)...},
-				length_{sizeof...(Tail) + 1},
+				length_{sizeof...(Tail)}, // Without null-terminator
 				hash_{ sid_hash(length_, str_.data()) }
 			{}
 
