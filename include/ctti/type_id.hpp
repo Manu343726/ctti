@@ -201,6 +201,16 @@ namespace std
             return std::size_t(id.hash());
         }
     };
+
+    template<>
+    struct hash<ctti::unnamed_type_id_t>
+    {
+        constexpr std::size_t operator()(const ctti::unnamed_type_id_t& id) const
+        {
+            // quiet warning about possible loss of data
+            return std::size_t(id.hash());
+        }
+    };
 }
 
 #endif //CTTI_HASH_HPP
