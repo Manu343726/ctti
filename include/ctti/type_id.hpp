@@ -86,44 +86,63 @@ namespace ctti
 
     using type_index = unnamed_type_id_t; // To mimic std::type_index when using maps
 
+
+    template<std::size_t N>
+    constexpr ctti::unnamed_type_id_t id_from_name(const char (&typeName)[N])
+    {
+        return detail::sid_hash(N - 1, typeName);
+    }
+
+    constexpr ctti::unnamed_type_id_t id_from_name(const char* typeName, std::size_t length)
+    {
+        return detail::sid_hash(length, typeName);
+    }
+
+    ctti::unnamed_type_id_t id_from_name(const std::string& typeName)
+    {
+        return detail::sid_hash(typeName.size(), typeName.data());
+    }
+
     namespace detail
     {
         template<typename T>
-		CTTI_CONSTEXPR_ID ctti::type_id_t type_id()
+	CTTI_CONSTEXPR_ID ctti::type_id_t type_id()
         {
             static_assert(CTTI_TYPE_ID_PRETTY_FUNCTION_END - CTTI_TYPE_ID_PRETTY_FUNCTION_BEGIN <= max_string_length, "CTTI_PRETTY_FUNCTION out of range");
 
 #ifdef CTTI_DEBUG_ID_FUNCTIONS
-			std::string name{ CTTI_TYPE_ID_PRETTY_FUNCTION + CTTI_TYPE_ID_PRETTY_FUNCTION_BEGIN, CTTI_TYPE_ID_PRETTY_FUNCTION_END - CTTI_TYPE_ID_PRETTY_FUNCTION_BEGIN - 1};
+            std::string name{ CTTI_TYPE_ID_PRETTY_FUNCTION + CTTI_TYPE_ID_PRETTY_FUNCTION_BEGIN, CTTI_TYPE_ID_PRETTY_FUNCTION_END - CTTI_TYPE_ID_PRETTY_FUNCTION_BEGIN - 1};
 
-			std::cout << "PRETTY_FUNCTION: " << CTTI_TYPE_ID_PRETTY_FUNCTION << std::endl;
-			std::cout << "Range: [" << CTTI_TYPE_ID_PRETTY_FUNCTION_BEGIN << "," << CTTI_TYPE_ID_PRETTY_FUNCTION_END << ")" << std::endl;
-			std::cout << "Name: " << name << std::endl;
+            std::cout << "PRETTY_FUNCTION: " << CTTI_TYPE_ID_PRETTY_FUNCTION << std::endl;
+            std::cout << "Range: [" << CTTI_TYPE_ID_PRETTY_FUNCTION_BEGIN << "," << CTTI_TYPE_ID_PRETTY_FUNCTION_END << ")" << std::endl;
+            std::cout << "Name: " << name << std::endl;
 #endif
             // one-liner required by MSVC :(
             return detail::make_string<CTTI_TYPE_ID_PRETTY_FUNCTION_BEGIN, CTTI_TYPE_ID_PRETTY_FUNCTION_END>(CTTI_TYPE_ID_PRETTY_FUNCTION);
         }
 
         template<typename T>
-		CTTI_CONSTEXPR_ID ctti::unnamed_type_id_t unnamed_type_id()
+        CTTI_CONSTEXPR_ID ctti::unnamed_type_id_t unnamed_type_id()
         {
             // one-liner required by MSVC :(
-			static_assert(CTTI_UNNAMED_TYPE_ID_PRETTY_FUNCTION_BEGIN < CTTI_UNNAMED_TYPE_ID_PRETTY_FUNCTION_END, "CTTI unnamed type id wrong range");
+            static_assert(CTTI_UNNAMED_TYPE_ID_PRETTY_FUNCTION_BEGIN < CTTI_UNNAMED_TYPE_ID_PRETTY_FUNCTION_END, "CTTI unnamed type id wrong range");
 
 #ifdef CTTI_DEBUG_ID_FUNCTIONS
-			std::string name{ CTTI_UNNAMED_TYPE_ID_PRETTY_FUNCTION + CTTI_UNNAMED_TYPE_ID_PRETTY_FUNCTION_BEGIN, CTTI_UNNAMED_TYPE_ID_PRETTY_FUNCTION_END - CTTI_UNNAMED_TYPE_ID_PRETTY_FUNCTION_BEGIN - 1};
+            std::string name{ CTTI_UNNAMED_TYPE_ID_PRETTY_FUNCTION + CTTI_UNNAMED_TYPE_ID_PRETTY_FUNCTION_BEGIN, CTTI_UNNAMED_TYPE_ID_PRETTY_FUNCTION_END - CTTI_UNNAMED_TYPE_ID_PRETTY_FUNCTION_BEGIN - 1};
 
-			std::cout << "PRETTY_FUNCTION: " << CTTI_UNNAMED_TYPE_ID_PRETTY_FUNCTION << std::endl;
-			std::cout << "Range: [" << CTTI_UNNAMED_TYPE_ID_PRETTY_FUNCTION_BEGIN << "," << CTTI_UNNAMED_TYPE_ID_PRETTY_FUNCTION_END << ")" << std::endl;
-			std::cout << "Name: " << name << std::endl;
-			std::cout << "Name size: " << name.size() << std::endl;
-			std::cout << "Name size (computed from range): " << (CTTI_UNNAMED_TYPE_ID_PRETTY_FUNCTION_END - CTTI_UNNAMED_TYPE_ID_PRETTY_FUNCTION_BEGIN - 1) << std::endl;
+            std::cout << "PRETTY_FUNCTION: " << CTTI_UNNAMED_TYPE_ID_PRETTY_FUNCTION << std::endl;
+            std::cout << "Range: [" << CTTI_UNNAMED_TYPE_ID_PRETTY_FUNCTION_BEGIN << "," << CTTI_UNNAMED_TYPE_ID_PRETTY_FUNCTION_END << ")" << std::endl;
+            std::cout << "Name: " << name << std::endl;
+            std::cout << "Name size: " << name.size() << std::endl;
+            std::cout << "Name size (computed from range): " << (CTTI_UNNAMED_TYPE_ID_PRETTY_FUNCTION_END - CTTI_UNNAMED_TYPE_ID_PRETTY_FUNCTION_BEGIN - 1) << std::endl;
 
-			return sid_hash(name.size(), name.data());
+            return id_from_name(name);
 #else
-			return sid_hash(CTTI_UNNAMED_TYPE_ID_PRETTY_FUNCTION_END - CTTI_UNNAMED_TYPE_ID_PRETTY_FUNCTION_BEGIN - 1, CTTI_UNNAMED_TYPE_ID_PRETTY_FUNCTION + CTTI_UNNAMED_TYPE_ID_PRETTY_FUNCTION_BEGIN);
+            return id_from_name(
+                CTTI_TYPE_ID_PRETTY_FUNCTION + CTTI_UNNAMED_TYPE_ID_PRETTY_FUNCTION_BEGIN,
+                CTTI_UNNAMED_TYPE_ID_PRETTY_FUNCTION_END - CTTI_UNNAMED_TYPE_ID_PRETTY_FUNCTION_BEGIN - 1
+            );
 #endif
-            
         }
     }
 
