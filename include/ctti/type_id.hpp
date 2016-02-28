@@ -98,7 +98,8 @@ namespace ctti
         return detail::sid_hash(length, typeName);
     }
 
-    ctti::unnamed_type_id_t id_from_name(const std::string& typeName)
+    // Inline to prevent ODR violation
+    inline ctti::unnamed_type_id_t id_from_name(const std::string& typeName)
     {
         return detail::sid_hash(typeName.size(), typeName.data());
     }
