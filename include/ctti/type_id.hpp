@@ -38,7 +38,7 @@ namespace ctti
         }
 
         // note: name().c_str() isn't null-terminated properly!
-        constexpr detail::string name() const
+        constexpr const detail::string& name() const
         {
             return name_;
         }
