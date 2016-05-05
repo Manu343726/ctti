@@ -63,11 +63,15 @@ namespace ctti
             _hash{hash}
         {}
 
+        constexpr unnamed_type_id_t(const type_id_t& id) :
+            _hash{id.hash()}
+        {}
+
         unnamed_type_id_t& operator=(const unnamed_type_id_t&) = default;
 
         constexpr detail::hash_t hash() const
         {
-			return _hash;
+	    return _hash;
         }
 
         friend constexpr bool operator==(const unnamed_type_id_t& lhs, const unnamed_type_id_t& rhs)
