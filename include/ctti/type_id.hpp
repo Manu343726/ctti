@@ -144,7 +144,7 @@ namespace ctti
             return id_from_name(name);
 #else
             return id_from_name(
-                CTTI_TYPE_ID_PRETTY_FUNCTION + CTTI_UNNAMED_TYPE_ID_PRETTY_FUNCTION_BEGIN,
+                CTTI_UNNAMED_TYPE_ID_PRETTY_FUNCTION + CTTI_UNNAMED_TYPE_ID_PRETTY_FUNCTION_BEGIN,
                 CTTI_UNNAMED_TYPE_ID_PRETTY_FUNCTION_END - CTTI_UNNAMED_TYPE_ID_PRETTY_FUNCTION_BEGIN - 1
             );
 #endif
