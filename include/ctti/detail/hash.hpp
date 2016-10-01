@@ -17,7 +17,7 @@ namespace ctti
         // FNV-1a 64 bit hash
         constexpr hash_t sid_hash(std::size_t n, const char *str, hash_t hash = fnv_basis)
         {
-			return n > 0 ? sid_hash(n - 1, str + 1, (hash ^ *str) * fnv_prime) : hash;
+            return n > 0 ? sid_hash(n - 1, str + 1, (hash ^ *str) * fnv_prime) : hash;
         }
     }
 }

@@ -1,3 +1,4 @@
+#include "ctti/detail/string.hpp"
 #include "ctti/type_id.hpp"
 #include <iostream>
 

@@ -16,18 +16,18 @@ namespace ctti
     namespace detail
     {
 #ifdef CTTI_STRING_MAX_LENGTH
-		constexpr std::size_t max_string_length = CTTI_STRING_MAX_LENGTH;
+        constexpr std::size_t max_string_length = CTTI_STRING_MAX_LENGTH;
 #else
-		constexpr std::size_t max_string_length = 256;
+        constexpr std::size_t max_string_length = 256;
 #endif
         struct string
         {
             template<typename Head, typename... Tail>
-			explicit constexpr string(Head&& head, Tail&&... tail) :
-				str_{std::forward<Head>(head), std::forward<Tail>(tail)...},
-				length_{sizeof...(Tail)}, // Without null-terminator
-				hash_{ sid_hash(length_, str_.data()) }
-			{}
+            explicit constexpr string(Head&& head, Tail&&... tail) :
+                str_{std::forward<Head>(head), std::forward<Tail>(tail)...},
+                length_{sizeof...(Tail)}, // Without null-terminator
+                hash_{ sid_hash(length_, str_.data()) }
+            {}
 
             constexpr hash_t hash() const
             {
@@ -50,7 +50,7 @@ namespace ctti
             }
 
             template <std::size_t Begin, std::size_t End>
-			constexpr string substr() const;
+            constexpr string substr() const;
 
             friend std::ostream& operator<<(std::ostream& os, const string& str)
             {
@@ -60,19 +60,19 @@ namespace ctti
             }
 
         private:
-			ctti::detail::array<char, max_string_length> str_;
+            ctti::detail::array<char, max_string_length> str_;
             std::size_t length_;
             hash_t hash_;
         };
 
-		namespace
-		{
-			template<std::size_t... Is>
-			constexpr string make_string(const char* str, std::index_sequence<Is...>)
-			{
-				return string(str[Is]..., '\0');
-			}
-		}
+        namespace
+        {
+            template<std::size_t... Is>
+            constexpr string make_string(const char* str, std::index_sequence<Is...>)
+            {
+                return string(str[Is]..., '\0');
+            }
+        }
 
         template<std::size_t begin, std::size_t end>
         constexpr string make_string(const char* str)
@@ -87,18 +87,18 @@ namespace ctti
         {
             return make_string<0,N>(str);
         }
-		
-		template<std::size_t N>
-		constexpr string make_string(ctti::detail::array<char,N> arr)
+
+        template<std::size_t N>
+        constexpr string make_string(ctti::detail::array<char,N> arr)
         {
-			return make_string<0, N>(arr.data());
+            return make_string<0, N>(arr.data());
         }
 
-		template <std::size_t Begin, std::size_t End>
-		constexpr string string::substr() const
-		{
-			return make_string(str_.subarray<Begin, End>());
-		}
+        template <std::size_t Begin, std::size_t End>
+        constexpr string string::substr() const
+        {
+            return make_string(str_.subarray<Begin, End>());
+        }
     }
 }
 
