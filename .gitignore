@@ -11,3 +11,8 @@ Release/
 *.sdf
 *.opensdf
 *.vs*
+
+# conan.io stuff
+conanbuildinfo.txt
+conaninfo.txt
+conanfile.pyc
