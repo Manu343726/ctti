@@ -1,4 +1,4 @@
-/build/
+build/
 *.idea
 *.vcxproj*
 Debug/
