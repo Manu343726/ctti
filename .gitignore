@@ -16,3 +16,10 @@ Release/
 conanbuildinfo.txt
 conaninfo.txt
 conanfile.pyc
+
+# Buck / Buckaroo
+/buck-out/
+/.buckd/
+/buckaroo/
+.buckconfig.local
+BUCKAROO_DEPS

@@ -1,0 +1,12 @@
+cxx_binary(
+  name = 'examples',
+  srcs = [
+    'main.cpp',
+  ],
+  compiler_flags = [
+    '-std=c++14',
+  ],
+  deps = [
+    '//:ctti',
+  ],
+)
