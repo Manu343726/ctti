@@ -1,5 +1,5 @@
 cxx_binary(
-  name = 'examples',
+  name = 'test_package',
   srcs = [
     'main.cpp',
   ],
