@@ -14,13 +14,14 @@ namespace detail
 class cstring
 {
 public:
+    template<std::size_t N>
+    constexpr cstring(const char (&str)[N]) :
+        cstring{&str[0], N}
+    {}
+
     constexpr cstring(const char* begin, std::size_t length) :
         _str{begin},
         _length{length}
-    {}
-
-    explicit constexpr cstring(const char* str) :
-        cstring{str, length(str)}
     {}
 
     constexpr cstring(const char* begin, const char* end) :
@@ -35,6 +36,11 @@ public:
     constexpr std::size_t length() const
     {
         return _length;
+    }
+
+    constexpr std::size_t size() const
+    {
+        return length();
     }
 
     constexpr hash_t hash() const
@@ -70,6 +76,11 @@ public:
     constexpr cstring operator()(std::size_t begin, std::size_t end) const
     {
         return {_str + begin, _str + end};
+    }
+
+    constexpr cstring pad(std::size_t begin_offset, std::size_t end_offset) const
+    {
+        return operator()(begin_offset, size() - end_offset - 1);
     }
 
     friend std::ostream& operator<<(std::ostream& os, const cstring& str)
