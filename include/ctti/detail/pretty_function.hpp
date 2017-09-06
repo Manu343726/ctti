@@ -52,17 +52,6 @@ constexpr ctti::detail::cstring value()
     #error "No support for this compiler."
 #endif
 
-/*
- *                                                            [begin    end)
- *                                                               |       |
- *                                                               v       v
- * +--------------------------------------------------------------------------+
- * | constexpr ctti::type_id_t ctti::detail::type_id() [with T = Typename]    |
- * +--------------------------------------------------------------------------+
- *  <-----------------------------------------------------------><------><---->
- *                                prefix                           name  suffix
- */
-
 #define CTTI_TYPE_PRETTY_FUNCTION_LEFT (sizeof(CTTI_TYPE_PRETTY_FUNCTION_PREFIX) - 1)
 #define CTTI_TYPE_PRETTY_FUNCTION_RIGHT (sizeof(CTTI_TYPE_PRETTY_FUNCTION_SUFFIX) - 1)
 
@@ -81,17 +70,6 @@ constexpr ctti::detail::cstring value()
 #else
     #error "No support for this compiler."
 #endif
-
-/*
- *                                                                    [begin    end)
- *                                                                       |       |
- *                                                                       v       v
- * +----------------------------------------------------------------------------------+
- * | constexpr ctti::type_id_t ctti::detail::unnamed_type_id() [with T = Typename]    |
- * +----------------------------------------------------------------------------------+
- *  <-------------------------------------------------------------------><------><---->
- *                                prefix                                   name  suffix
- */
 
 #define CTTI_VALUE_PRETTY_FUNCTION_LEFT (sizeof(CTTI_VALUE_PRETTY_FUNCTION_PREFIX) - 1)
 #define CTTI_VALUE_PRETTY_FUNCTION_SEPARATION (sizeof(CTTI_VALUE_PRETTY_FUNCTION_SEPARATOR) - 1)

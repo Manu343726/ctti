@@ -45,7 +45,7 @@ endfunction()
 
 
 if(NOT MSVC)
-	set(CTTI_GLOBAL_ALL_COMPILE_OPTIONS -std=c++14)
+	set(CTTI_GLOBAL_ALL_COMPILE_OPTIONS -std=c++11)
 endif()
 
 include_directories(include)
