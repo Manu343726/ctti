@@ -64,8 +64,8 @@ constexpr ctti::detail::cstring value()
     #define CTTI_VALUE_PRETTY_FUNCTION_SEPARATOR "; T Value = "
     #define CTTI_VALUE_PRETTY_FUNCTION_SUFFIX "]"
 #elif defined(_MSC_VER)
-    #define CTTI_VALUE_PRETTY_FUNCTION_PREFIX "struct ctti::detail::cstring __cdecl ctti::pretty_function::value<"
-    #define CTTI_VALUE_PRETTY_FUNCTION_SEPARATOR "; T Value = "
+    #define CTTI_VALUE_PRETTY_FUNCTION_PREFIX "class ctti::detail::cstring __cdecl ctti::pretty_function::value<"
+    #define CTTI_VALUE_PRETTY_FUNCTION_SEPARATOR ","
     #define CTTI_VALUE_PRETTY_FUNCTION_SUFFIX ">(void)"
 #else
     #error "No support for this compiler."
