@@ -25,6 +25,15 @@ int main()
 }
 ```
 
+## Run the examples using Buck
+
+The examples can be run easily using [Buck](https://buckbuild.com):
+
+``` bash
+buck run examples/
+buck run test_package/
+```
+
 ## Support and current status
 
 This was tested on Visual Studio 2015, GCC 5.2.0, MinGW GCC 5.1, Clang 3.6.2, and cygwin Clang 3.5.2.
