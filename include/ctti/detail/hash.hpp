@@ -11,8 +11,9 @@ namespace ctti
 
         using hash_t = std::uint64_t;
 
+        // See http://www.isthe.com/chongo/tech/comp/fnv/#FNV-param
         constexpr hash_t fnv_basis = 14695981039346656037ull;
-        constexpr hash_t fnv_prime = 109951162821ull;
+        constexpr hash_t fnv_prime = 1099511628211ull;
 
         // FNV-1a 64 bit hash
         constexpr hash_t sid_hash(std::size_t n, const char *str, hash_t hash = fnv_basis)
