@@ -38,6 +38,20 @@ namespace bar
     }
 }
 
+class MyClass
+{
+public:
+    class InnerClass {};
+};
+
+struct MyStruct
+{
+    struct InnerStruct {};
+};
+
+enum ClassicEnum {};
+enum class EnumClass {};
+
 TEST_CASE("nameof")
 {
     SECTION("basic types")
@@ -50,22 +64,12 @@ TEST_CASE("nameof")
 
     SECTION("class types")
     {
-        class MyClass
-        {
-        public:
-            class InnerClass {};
-        };
-
         REQUIRE(nameof<MyClass>() == "MyClass");
         REQUIRE(nameof<MyClass::InnerClass>() == "MyClass::InnerClass");
     }
 
     SECTION("struct types")
     {
-        struct MyStruct
-        {
-            struct InnerStruct {};
-        };
 
         REQUIRE(nameof<MyStruct>() == "MyStruct");
         REQUIRE(nameof<MyStruct::InnerStruct>() == "MyStruct::InnerStruct");
@@ -73,9 +77,6 @@ TEST_CASE("nameof")
 
     SECTION("enum types")
     {
-        enum ClassicEnum {};
-        enum class EnumClass {};
-
         REQUIRE(nameof<ClassicEnum>() == "ClassicEnum");
         REQUIRE(nameof<EnumClass>() == "EnumClass");
     }
