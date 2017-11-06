@@ -93,23 +93,23 @@ namespace ctti
     template<std::size_t N>
     constexpr ctti::unnamed_type_id_t id_from_name(const char (&typeName)[N])
     {
-        return detail::sid_hash(N - 1, typeName);
+        return detail::fnv1a_hash(typeName);
     }
 
     constexpr ctti::unnamed_type_id_t id_from_name(const char* typeName, std::size_t length)
     {
-        return detail::sid_hash(length, typeName);
+        return detail::fnv1a_hash(length, typeName);
     }
 
     constexpr ctti::unnamed_type_id_t id_from_name(const ctti::detail::cstring& name)
     {
-        return detail::sid_hash(name.size(), name.begin());
+        return detail::fnv1a_hash(name.size(), name.begin());
     }
 
     // Inline to prevent ODR violation
     inline ctti::unnamed_type_id_t id_from_name(const std::string& typeName)
     {
-        return detail::sid_hash(typeName.size(), typeName.data());
+        return detail::fnv1a_hash(typeName.size(), typeName.data());
     }
 
     namespace detail

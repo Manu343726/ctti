@@ -29,5 +29,11 @@ install:
 
   - cmake --version
 
+  - mkdir build && cd build
+  - cmake .. -DCTTI_BUILD_TESTS=ON
+  - cmake --build .
+  - ctest -V
+
 script:
+  - cd ${TRAVIS_BUILD_DIR}
   - conan test_package --build=outdated

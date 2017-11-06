@@ -2,6 +2,7 @@
 #define CTTI_DETAIL_CSTRING_HPP
 
 #include "hash.hpp"
+#include "algorithm.hpp"
 #include <ostream>
 #include <string>
 
@@ -16,7 +17,7 @@ class cstring
 public:
     template<std::size_t N>
     constexpr cstring(const char (&str)[N]) :
-        cstring{&str[0], N}
+        cstring{&str[0], N - 1}
     {}
 
     constexpr cstring(const char* begin, std::size_t length) :
@@ -26,6 +27,10 @@ public:
 
     constexpr cstring(const char* begin, const char* end) :
         cstring{begin, static_cast<std::size_t>(end - begin)}
+    {}
+
+    constexpr cstring(const char* begin) :
+        cstring{begin, length(begin)}
     {}
 
     static constexpr std::size_t length(const char* str)
@@ -45,12 +50,17 @@ public:
 
     constexpr hash_t hash() const
     {
-        return sid_hash(length(), begin());
+        return fnv1a_hash(length(), begin());
     }
 
     std::string cppstring() const
     {
-        return {begin(), length()};
+        return {begin(), end()};
+    }
+
+    std::string str() const
+    {
+        return cppstring();
     }
 
     constexpr const char* begin() const
@@ -80,7 +90,7 @@ public:
 
     constexpr cstring pad(std::size_t begin_offset, std::size_t end_offset) const
     {
-        return operator()(begin_offset, size() - end_offset - 1);
+        return operator()(begin_offset, size() - end_offset);
     }
 
     friend std::ostream& operator<<(std::ostream& os, const cstring& str)
@@ -97,6 +107,16 @@ private:
     const char* _str;
     std::size_t _length;
 };
+
+constexpr bool operator==(const cstring& lhs, const cstring& rhs)
+{
+    return ctti::detail::equal_range(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
+}
+
+constexpr bool operator!=(const cstring& lhs, const cstring& rhs)
+{
+    return !(lhs == rhs);
+}
 
 }
 

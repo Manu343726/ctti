@@ -57,7 +57,7 @@ constexpr ctti::detail::cstring value()
 
 #if defined(__clang__)
     #define CTTI_VALUE_PRETTY_FUNCTION_PREFIX "ctti::detail::cstring ctti::pretty_function::value() [T = "
-    #define CTTI_VALUE_PRETTY_FUNCTION_SEPARATOR "; T Value = "
+    #define CTTI_VALUE_PRETTY_FUNCTION_SEPARATOR "; Value = "
     #define CTTI_VALUE_PRETTY_FUNCTION_SUFFIX "]"
 #elif defined(__GNUC__) && !defined(__clang__)
     #define CTTI_VALUE_PRETTY_FUNCTION_PREFIX "constexpr ctti::detail::cstring ctti::pretty_function::value() [with T = "
