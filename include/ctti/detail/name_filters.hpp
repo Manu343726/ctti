@@ -34,6 +34,42 @@ constexpr ctti::detail::cstring filter_typename_prefix(const ctti::detail::cstri
     return filter_struct(filter_class(type_name));
 }
 
+namespace
+{
+
+constexpr const char* find_ith_impl(const ctti::detail::cstring& name, const ctti::detail::cstring& substring, const char* res, std::size_t i, bool infinite = false)
+{
+    return (name.length() >= substring.length()) ?
+        ((name(0, substring.length()) == substring) ?
+            ((i == 0) ?
+                name.begin()
+            :
+                find_ith_impl(name(substring.length(), name.length()), substring, name.begin(), i - 1, infinite))
+        :
+            find_ith_impl(name(1, name.length()), substring, res, i, infinite))
+        :
+            (!infinite && i == 0) ? name.end() : res;
+}
+
+}
+
+constexpr const char* find_ith(const ctti::detail::cstring& name, const ctti::detail::cstring& substring, std::size_t i)
+{
+    return find_ith_impl(name, substring, name.end(), i);
+}
+
+constexpr const char* find_last(const ctti::detail::cstring& name, const ctti::detail::cstring& substring)
+{
+    return find_ith_impl(name, substring, name.end(), -1, true);
+}
+
+constexpr const char* find(const ctti::detail::cstring& name, const ctti::detail::cstring& substring)
+{
+    return find_ith(name, substring, 0);
+}
+
+
+
 }
 
 }

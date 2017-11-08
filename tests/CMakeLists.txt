@@ -5,10 +5,12 @@ add_executable(ctti-test
     cstring.cpp
     hash.cpp
     nameof.cpp
+    name_filters.cpp
+    detailed_nameof.cpp
 )
 
 if(NOT MSVC)
-    target_compile_options(ctti-test PRIVATE -std=c++11)
+    target_compile_options(ctti-test PRIVATE -std=c++11 -DCATCH_CONFIG_NO_POSIX_SIGNALS)
 endif()
 
 add_test(ctti-test ctti-test)
