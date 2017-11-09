@@ -4,6 +4,7 @@
 #include <ctti/detail/pretty_function.hpp>
 #include <ctti/detail/name_filters.hpp>
 #include <ctti/detail/meta.hpp>
+#include <ctti/detail/language_features.hpp>
 #include <ctti/type_tag.hpp>
 #include <ctti/static_value.hpp>
 #include <type_traits>
@@ -125,6 +126,15 @@ constexpr ctti::detail::cstring nameof()
     using namespace ctti;
     return ctti_nameof(ctti::static_value<T, Value>());
 }
+
+#ifdef CTTI_HAS_VARIABLE_TEMPLATES
+template<typename T>
+constexpr ctti::detail::cstring nameof_v = ctti::nameof<T>();
+
+// CONSIDER USING nameof_v<CTTI_STATIC_VALUE(value)> INSTEAD
+template<typename T, T Value>
+constexpr ctti::detail::cstring nameof_value_v = ctti::nameof<T, Value>();
+#endif // CTTI_HAS_VARIABLE_TEMPLATES
 
 }
 

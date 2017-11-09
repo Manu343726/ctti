@@ -49,8 +49,8 @@ struct MyStruct
     struct InnerStruct {};
 };
 
-enum ClassicEnum {};
-enum class EnumClass {};
+enum ClassicEnum { A, B, C };
+enum class EnumClass { A, B, C };
 
 TEST_CASE("nameof")
 {
@@ -79,6 +79,13 @@ TEST_CASE("nameof")
     {
         REQUIRE(nameof<ClassicEnum>() == "ClassicEnum");
         REQUIRE(nameof<EnumClass>() == "EnumClass");
+    }
+
+    SECTION("enum values")
+    {
+        REQUIRE(nameof<CTTI_STATIC_VALUE(ClassicEnum::A)>() == "ClassicEnum::A");
+        REQUIRE(nameof<CTTI_STATIC_VALUE(EnumClass::A)>() == "EnumClass::A");
+        REQUIRE(nameof<CTTI_STATIC_VALUE(ClassicEnum::A)>() == "ClassicEnum::A");
     }
 
     SECTION("with namespaces")
@@ -120,4 +127,12 @@ TEST_CASE("nameof")
             REQUIRE(nameof<CTTI_STATIC_VALUE(bar::Enum::C)>() == "Enum::Si");
         }
     }
+
+#ifdef CTTI_HAS_VARIABLE_TEMPLATES
+    SECTION("variable templates")
+    {
+        REQUIRE(ctti::nameof_v<int> == nameof<int>());
+        REQUIRE(ctti::nameof_value_v<int, 42> == nameof<int, 42>());
+    }
+#endif // CTTI_HAS_VARIABLE_TEMPLATES
 }
