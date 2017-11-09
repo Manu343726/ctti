@@ -19,6 +19,10 @@ TEST_CASE("name_filters")
         REQUIRE(find_ith(foo_full, "::", 2) == foo_full.begin() + cstring("foo::foo::foo").length());
 
         REQUIRE(find_ith(foobar, "foo", 1) == foobar.end());
+        REQUIRE(find_ith(foobar, "foo", 2) == foobar.end());
+        REQUIRE(find_ith(foobar, "foo", 3) == foobar.end());
+
+        REQUIRE(find_ith(foobar, "::", 1) == foobar.end());
     }
 
     SECTION("find")

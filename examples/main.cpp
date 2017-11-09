@@ -27,6 +27,7 @@ int main()
     std::cout << ctti::nameof<foo>() << std::endl;
     std::cout << ctti::nameof<decltype(&foo::i)>() << std::endl;
     std::cout << ctti::pretty_function::value<decltype(&foo::i), &foo::i>() << " -> " << ctti::nameof<CTTI_STATIC_VALUE(&foo::i)>() << std::endl;
+    std::cout << ctti::pretty_function::value<decltype(bar_enum::FOO), bar_enum::FOO>() << " -> " << ctti::nameof<CTTI_STATIC_VALUE(bar_enum::FOO)>() << std::endl;
     std::cout << ctti::nameof<CTTI_STATIC_VALUE(&f)>() << std::endl;
     std::cout << ctti::nameof<CTTI_STATIC_VALUE(bar_enum::FOO)>() << std::endl;
     std::cout << ctti::type_id(std::cout).hash() << std::endl;

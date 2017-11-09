@@ -48,7 +48,7 @@ constexpr const char* find_ith_impl(const ctti::detail::cstring& name, const ctt
         :
             find_ith_impl(name(1, name.length()), substring, res, i, infinite))
         :
-            (!infinite && i == 0) ? name.end() : res;
+            (!infinite) ? name.end() : res;
 }
 
 }

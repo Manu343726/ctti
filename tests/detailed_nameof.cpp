@@ -75,16 +75,17 @@ TEST_CASE("detailed_nameof")
 
     SECTION("qualifiers")
     {
-        // TODO: tests
-        /*
-        REQUIRE(detailed_nameof<Struct>().full_name() == "Struct");
-        REQUIRE(detailed_nameof<Enum>().full_name() == "Enum");
-        REQUIRE(detailed_nameof<Namespace::Struct>().full_name() == "Namespace::Struct");
-        REQUIRE(detailed_nameof<Namespace::Struct::Enum>().full_name() == "&Namespace::Struct::Enum");
-        REQUIRE(detailed_nameof<CTTI_STATIC_VALUE(&Struct::member)>().full_name() == "&Struct::member");
-        REQUIRE(detailed_nameof<CTTI_STATIC_VALUE(Enum::Value)>().full_name() == "Enum::Value");
-        REQUIRE(detailed_nameof<CTTI_STATIC_VALUE(&Namespace::Struct::member)>().full_name() == "&namespace::Struct::member");
-        REQUIRE(detailed_nameof<CTTI_STATIC_VALUE(Namespace::Struct::Enum::Value)>().full_name() == "Namespace::Struct::Enum::Value");
-        */
+        REQUIRE(detailed_nameof<Struct>().qualifier(0) == "");
+        REQUIRE(detailed_nameof<Struct>().qualifier(1) == "");
+        REQUIRE(detailed_nameof<Struct>().qualifier(2) == "");
+        REQUIRE(detailed_nameof<Enum>().qualifier(0) == "");
+        REQUIRE(detailed_nameof<Enum>().qualifier(1) == "");
+        REQUIRE(detailed_nameof<Enum>().qualifier(2) == "");
+        REQUIRE(detailed_nameof<Namespace::Struct>().qualifier(0) == "Namespace");
+        REQUIRE(detailed_nameof<Namespace::Struct>().qualifier(1) == "");
+        REQUIRE(detailed_nameof<Namespace::Struct>().qualifier(2) == "");
+        REQUIRE(detailed_nameof<Namespace::Struct::Enum>().qualifier(0) == "Namespace");
+        REQUIRE(detailed_nameof<Namespace::Struct::Enum>().qualifier(1) == "Struct");
+        REQUIRE(detailed_nameof<Namespace::Struct::Enum>().qualifier(2) == "");
     }
 }
