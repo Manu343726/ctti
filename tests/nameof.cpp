@@ -81,12 +81,21 @@ TEST_CASE("nameof")
         REQUIRE(nameof<EnumClass>() == "EnumClass");
     }
 
+#ifdef CTTI_HAS_ENUM_AWARE_PRETTY_FUNCTION
     SECTION("enum values")
     {
         REQUIRE(nameof<CTTI_STATIC_VALUE(ClassicEnum::A)>() == "ClassicEnum::A");
         REQUIRE(nameof<CTTI_STATIC_VALUE(EnumClass::A)>() == "EnumClass::A");
         REQUIRE(nameof<CTTI_STATIC_VALUE(ClassicEnum::A)>() == "ClassicEnum::A");
     }
+#else
+    SECTION("enum values")
+    {
+        REQUIRE(nameof<CTTI_STATIC_VALUE(ClassicEnum::A)>() == "(ClassicEnum)0");
+        REQUIRE(nameof<CTTI_STATIC_VALUE(EnumClass::A)>() == "(EnumClass)0");
+        REQUIRE(nameof<CTTI_STATIC_VALUE(ClassicEnum::A)>() == "(ClassicEnum)0");
+    }
+#endif
 
     SECTION("with namespaces")
     {

@@ -42,11 +42,15 @@ TEST_CASE("detailed_nameof")
         REQUIRE(detailed_nameof<Struct>().full_name() == "Struct");
         REQUIRE(detailed_nameof<Enum>().full_name() == "Enum");
         REQUIRE(detailed_nameof<Namespace::Struct>().full_name() == "Namespace::Struct");
-        REQUIRE(detailed_nameof<Namespace::Struct::Enum>().full_name() == "Namespace::Struct::Enum");
         REQUIRE(detailed_nameof<CTTI_STATIC_VALUE(&Struct::member)>().full_name() == "&Struct::member");
-        REQUIRE(detailed_nameof<CTTI_STATIC_VALUE(Enum::Value)>().full_name() == "Enum::Value");
         REQUIRE(detailed_nameof<CTTI_STATIC_VALUE(&Namespace::Struct::member)>().full_name() == "&Namespace::Struct::member");
+        REQUIRE(detailed_nameof<CTTI_STATIC_VALUE(Enum::Value)>().full_name() == "Enum::Value");
+
+#ifdef CTTI_HAS_ENUM_AWARE_PRETTY_FUNCTION
         REQUIRE(detailed_nameof<CTTI_STATIC_VALUE(Namespace::Struct::Enum::Value)>().full_name() == "Namespace::Struct::Enum::Value");
+#else
+        REQUIRE(detailed_nameof<CTTI_STATIC_VALUE(Namespace::Struct::Enum::Value)>().full_name() == "(Namespace::Struct::Enum)0");
+#endif // CTTI_HAS_ENUM_AWARE_PRETTY_FUNCTION
     }
 
     SECTION("full_homogeneous_name")
@@ -56,9 +60,14 @@ TEST_CASE("detailed_nameof")
         REQUIRE(detailed_nameof<Namespace::Struct>().full_homogeneous_name() == "Namespace::Struct");
         REQUIRE(detailed_nameof<Namespace::Struct::Enum>().full_homogeneous_name() == "Namespace::Struct::Enum");
         REQUIRE(detailed_nameof<CTTI_STATIC_VALUE(&Struct::member)>().full_homogeneous_name() == "Struct::member");
-        REQUIRE(detailed_nameof<CTTI_STATIC_VALUE(Enum::Value)>().full_homogeneous_name() == "Enum::Value");
         REQUIRE(detailed_nameof<CTTI_STATIC_VALUE(&Namespace::Struct::member)>().full_homogeneous_name() == "Namespace::Struct::member");
+        REQUIRE(detailed_nameof<CTTI_STATIC_VALUE(Enum::Value)>().full_homogeneous_name() == "Enum::Value");
+
+#ifdef CTTI_HAS_ENUM_AWARE_PRETTY_FUNCTION
         REQUIRE(detailed_nameof<CTTI_STATIC_VALUE(Namespace::Struct::Enum::Value)>().full_homogeneous_name() == "Namespace::Struct::Enum::Value");
+#else
+        REQUIRE(detailed_nameof<CTTI_STATIC_VALUE(Namespace::Struct::Enum::Value)>().full_homogeneous_name() == "(Namespace::Struct::Enum)0");
+#endif // CTTI_HAS_ENUM_AWARE_PRETTY_FUNCTION
     }
 
     SECTION("name")
@@ -70,7 +79,13 @@ TEST_CASE("detailed_nameof")
         REQUIRE(detailed_nameof<CTTI_STATIC_VALUE(&Struct::member)>().name() == "member");
         REQUIRE(detailed_nameof<CTTI_STATIC_VALUE(Enum::Value)>().name() == "Value");
         REQUIRE(detailed_nameof<CTTI_STATIC_VALUE(&Namespace::Struct::member)>().name() == "member");
+        REQUIRE(detailed_nameof<CTTI_STATIC_VALUE(Enum::Value)>().name() == "Value");
+
+#ifdef CTTI_HAS_ENUM_AWARE_PRETTY_FUNCTION
         REQUIRE(detailed_nameof<CTTI_STATIC_VALUE(Namespace::Struct::Enum::Value)>().name() == "Value");
+#else
+        REQUIRE(detailed_nameof<CTTI_STATIC_VALUE(Namespace::Struct::Enum::Value)>().name() == "Enum)0");
+#endif // CTTI_HAS_ENUM_AWARE_PRETTY_FUNCTION
     }
 
     SECTION("qualifiers")
@@ -87,6 +102,13 @@ TEST_CASE("detailed_nameof")
         REQUIRE(detailed_nameof<Namespace::Struct::Enum>().qualifier(0) == "Namespace");
         REQUIRE(detailed_nameof<Namespace::Struct::Enum>().qualifier(1) == "Struct");
         REQUIRE(detailed_nameof<Namespace::Struct::Enum>().qualifier(2) == "");
+        REQUIRE(detailed_nameof<CTTI_STATIC_VALUE(Enum::Value)>().qualifier(0) == "Enum");
+
+#ifdef CTTI_HAS_ENUM_AWARE_PRETTY_FUNCTION
+        REQUIRE(detailed_nameof<CTTI_STATIC_VALUE(Namespace::Struct::Enum::Value)>().qualifier(0) == "Namespace");
+#else
+        REQUIRE(detailed_nameof<CTTI_STATIC_VALUE(Namespace::Struct::Enum::Value)>().qualifier(0) == "(Namespace");
+#endif // CTTI_HAS_ENUM_AWARE_PRETTY_FUNCTION
     }
 
 #ifdef CTTI_HAS_VARIABLE_TEMPLATES
