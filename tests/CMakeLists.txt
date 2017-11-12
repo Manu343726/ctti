@@ -7,6 +7,10 @@ add_executable(ctti-test
     nameof.cpp
     name_filters.cpp
     detailed_nameof.cpp
+    tie.cpp
+    map.cpp
+    model.cpp
+    symbol.cpp
 )
 
 if(NOT MSVC)

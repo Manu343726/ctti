@@ -33,15 +33,16 @@ All major compilers except GCC before 5.1 support this.
 
 ## Features
 
- - `ctti::nameof<T>()`: `constexpr` demangled full qualified type names.
- - `ctti::nameof<T, T Value>()`: `constexpr` demangled value strings.
- - `ctti::static_calue<T, Value>`: `std::integral_constant` on steroids, to pass values as template parameters.
- - `CTTI_STATIC_VALUE(Value)`: Handy macro to instance a `ctti::static_value` from the given value.
- - `ctti::detailed_nameof<>()`: Alternatives to nameof with detailed name info, supporting non-qualified names, getting qualifiers, etc. See `ctti::name_t` for details. 
- - `ctti::nameof_v<>` and `ctti::detailed_nameof_v<>`: C++14 variable template alternatives to the nameof family of functions. Thanks C++ Bruja for this suggestion.
- - `ctti::type_id<T>()`: `constexpr` `std::type_info`-like type identifier. See `ctti::type_id_t` bellow for details.
- - `ctti::id_from_name(name)`: Get the type id corresponding to the given typename.
- - `ctti::unnamed_type_id<T>()`: `constexpr` `std::type_info`-like hash-only type identifier. See `ctti::unnamed_type_id_t` bellow for details.
+ - **`ctti::nameof<T>()`**: `constexpr` demangled full qualified type names.
+ - **`ctti::nameof<T, T Value>()`**: `constexpr` demangled value strings.
+ - **`ctti::static_calue<T, Value>`**: `std::integral_constant` on steroids, to pass values as template parameters.
+ - **`CTTI_STATIC_VALUE(Value)`**: Handy macro to instance a `ctti::static_value` from the given value.
+ - **`ctti::detailed_nameof<>()`**: Alternatives to nameof with detailed name info, supporting non-qualified names, getting qualifiers, etc. See `ctti::name_t` for details. 
+ - **`ctti::nameof_v<>` and `ctti::detailed_nameof_v<>`**: C++14 variable template alternatives to the nameof family of functions. Thanks C++ Bruja for this suggestion.
+ - **`ctti::type_id<T>()`**: `constexpr` `std::type_info`-like type identifier. See `ctti::type_id_t` bellow for details.
+ - **`ctti::id_from_name(name)`**: Get the type id corresponding to the given typename.
+ - **`ctti::unnamed_type_id<T>()`**: `constexpr` `std::type_info`-like hash-only type identifier. See `ctti::unnamed_type_id_t` bellow for details.
+ - **Symbol based introspection**: Automatic serialization (wip), object conversion, etc. See symbolic introspection bellow.
 
 ### Name customization
 
@@ -134,6 +135,67 @@ struct object
     ctti::unnamed_type_id_t type_id;
     void* data;
 };
+```
+
+### Symbolic introspection
+
+ctti implements object introspection by working with abstract "symbols" defined by the user:
+
+``` cpp
+#include <ctti/symbol.hpp>
+
+CTTI_DEFINE_SYMBOL(foo);
+```
+
+the `CTTI_DEFINE_SYMBOL` macro defines an abstract identifier, a symbol, in the current namespace. After its definition,
+classes can be asked for members through that symbo:
+
+``` cpp
+CTTI_DEFINE_SYMBOL(i);
+
+struct my_struct
+{
+    int i;
+};
+
+static_assert(i::is_member_of<my_struct>(), "Has my_struct a member named 'i'?");
+```
+
+with symbols as non-intrusive generic member identifiers, objects can be manipulated in a generic way:
+
+``` cpp
+#include <ctti/symbol.hpp>
+#include <ctti/tie.hpp>
+
+CTTI_DEFINE_SYMBOL(a);
+CTTI_DEFINE_SYMBOL(b);
+CTTI_DEFINE_SYMBOL(c);
+
+struct foo
+{
+    int a, b, c;
+};
+
+
+int var_a, var_b;
+foo my_foo{1, 2, 3};
+
+ctti::tie<a, b>(var_a, var_b) = my_foo;
+
+assert(var_a == 1);
+assert(var_a == 2);
+```
+
+``` cpp
+struct bar
+{
+    int a, b;
+};
+
+bar my_bar;
+
+// Copy my_foo.a to my_bar.a and my_foo.b to my_bar.b:
+ctti::map(my_foo, my_bar, ctti::mapping<a, a>(), ctti::mapping<b, b>());
 ```
 
 ### Conditional features

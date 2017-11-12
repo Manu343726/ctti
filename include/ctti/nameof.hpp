@@ -70,7 +70,7 @@ struct nameof_impl
 };
 
 template<typename T>
-struct nameof_impl<T, ctti::detail::void_t<decltype(T::ctti_nameof())>>
+struct nameof_impl<T, ctti::meta::void_t<decltype(T::ctti_nameof())>>
 {
     static constexpr ctti::detail::cstring apply()
     {
