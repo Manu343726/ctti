@@ -39,7 +39,7 @@ T lexical_cast(const std::string& str)
 struct string_to_value
 {
     template<typename Source, typename SourceSymbol, typename Sink, typename SinkSymbol>
-    constexpr void operator()(const Source& source, SourceSymbol, Sink& sink, SinkSymbol) const
+    void operator()(const Source& source, SourceSymbol, Sink& sink, SinkSymbol) const
     {
         ctti::get_member_value<SinkSymbol>(sink) = lexical_cast<typename SinkSymbol::template value_type<Sink>>(ctti::get_member_value<SourceSymbol>(source));
     }
@@ -48,7 +48,7 @@ struct string_to_value
 struct value_to_string
 {
     template<typename Source, typename SourceSymbol, typename Sink, typename SinkSymbol>
-    constexpr void operator()(const Source& source, SourceSymbol, Sink& sink, SinkSymbol) const
+    void operator()(const Source& source, SourceSymbol, Sink& sink, SinkSymbol) const
     {
         ctti::get_member_value<SinkSymbol>(sink) = lexical_cast(ctti::get_member_value<SourceSymbol>(source));
     }
