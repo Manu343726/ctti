@@ -5,6 +5,8 @@
 struct Foo
 {
     int foobar;
+    int getter() const;
+    void setter(int i);
 };
 
 enum class Enum
@@ -14,6 +16,8 @@ enum class Enum
 
 CTTI_DEFINE_SYMBOL(foobar);
 CTTI_DEFINE_SYMBOL(Value);
+CTTI_DEFINE_SYMBOL(getter);
+CTTI_DEFINE_SYMBOL(setter);
 
 #include <ctti/symbol_from_hash.hpp>
 
@@ -21,6 +25,8 @@ EXPECT_TRUE(foobar::is_member_of<Foo>());
 EXPECT_FALSE(foobar::is_member_of<Enum>());
 EXPECT_FALSE(Value::is_member_of<Foo>());
 EXPECT_TRUE(Value::is_member_of<Enum>());
+EXPECT_TRUE(getter::is_member_of<Foo>());
+EXPECT_TRUE(setter::is_member_of<Foo>());
 
 EXPECT_EQ(foobar::get_member<Foo>(), &Foo::foobar);
 EXPECT_EQ(foobar::get_member<Enum>(), nullptr);

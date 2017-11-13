@@ -13,7 +13,7 @@ struct default_symbol_mapping_function
     template<typename Source, typename SourceSymbol, typename Sink, typename SinkSymbol>
     void operator()(const Source& source, SourceSymbol, Sink& sink, SinkSymbol) const
     {
-        ctti::get_member_value<SinkSymbol>(sink) = ctti::get_member_value<SourceSymbol>(source);
+        ctti::set_member_value<SinkSymbol>(sink, ctti::get_member_value<SourceSymbol>(source));
     }
 };
 
@@ -37,6 +37,23 @@ struct symbol_mapping
     {}
 
     Function function;
+
+    template<typename Source, typename Sink>
+    auto operator()(const Source& source, SourceSymbol, Sink& sink, SinkSymbol) const ->
+        ctti::meta::void_t<decltype(std::declval<Function>()(source, SourceSymbol(), sink, SinkSymbol()))>
+    {
+        function(source, SourceSymbol(), sink, SinkSymbol());
+    }
+
+    template<typename Source, typename Sink>
+    auto operator()(const Source& source, SourceSymbol, Sink& sink, SinkSymbol) const ->
+        ctti::meta::void_t<decltype(std::declval<Function>()(ctti::get_member_value<SourceSymbol>(source), ctti::type_tag<typename SinkSymbol::template value_type<Sink>>()))>
+    {
+        ctti::set_member_value<SinkSymbol>(sink, function(
+            ctti::get_member_value<SourceSymbol>(source),
+            ctti::type_tag<typename SinkSymbol::template value_type<Sink>>()
+        ));
+    }
 };
 
 template<typename SourceSymbol, typename SinkSymbol, typename Function>
@@ -54,7 +71,7 @@ constexpr ctti::symbol_mapping<SourceSymbol, SinkSymbol> mapping()
 template<typename Source, typename Sink, typename... SourceSymbols, typename... SinkSymbols, typename... MappingFunctions>
 void map(const Source& source, Sink& sink, const ctti::symbol_mapping<SourceSymbols, SinkSymbols, MappingFunctions>&... mapping)
 {
-    [](...){}((map<SourceSymbols, SinkSymbols>(source, sink, mapping.function), 0)...);
+    [](...){}((map<SourceSymbols, SinkSymbols>(source, sink, mapping), 0)...);
 }
 
 }

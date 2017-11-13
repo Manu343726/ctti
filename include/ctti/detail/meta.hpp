@@ -25,7 +25,7 @@ namespace meta
     struct assert<> {};
 
     template<typename T>
-    using void_t = typename std::conditional<sizeof(T) >= 0, void, T>::type;
+    using void_t = typename std::conditional<sizeof(T*) >= 0, void, T>::type;
 
     template<typename T>
     struct identity
@@ -35,6 +35,9 @@ namespace meta
 
     template<typename Metafunction>
     using type_t = typename Metafunction::type;
+
+    template<bool Cond, typename T = void>
+    using enable_if_t = typename std::enable_if<Cond, T>::type;
 
     template<typename MetafunctionClass, typename... Args>
     using apply_t = type_t<typename MetafunctionClass::template apply<Args...>>;
