@@ -26,7 +26,7 @@
                 return false;                                                \
             }                                                                \
                                                                              \
-            using member_type = nullptr_t;                                   \
+            using member_type = std::nullptr_t;                              \
                                                                              \
             static constexpr member_type get_member() {                      \
                 return nullptr;                                              \

@@ -35,7 +35,7 @@ private:
     template<std::size_t Index, typename T, typename = typename std::enable_if<
         Symbol<Index>::template is_member_of<T>()
     >::type>
-    constexpr void assign_member(const T& object)
+    void assign_member(const T& object)
     {
         std::get<Index>(_refs) = ctti::get_member_value<Symbol<Index>>(object);
     }
@@ -43,11 +43,11 @@ private:
     template<std::size_t Index, typename T, typename std::enable_if<
         !Symbol<Index>::template is_member_of<T>()
     >::type>
-    constexpr void assign_member(const T& object)
+    void assign_member(const T& object)
     {}
 
     template<typename T, std::size_t... Index>
-    constexpr void assign(const T& object, ctti::meta::index_sequence<Index...>)
+    void assign(const T& object, ctti::meta::index_sequence<Index...>)
     {
         [](...){}((tie_t::assign_member<Index>(object), 42)...);
     }
