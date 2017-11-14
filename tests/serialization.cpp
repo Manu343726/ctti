@@ -25,8 +25,18 @@ struct Foo
 
     struct Bar
     {
+        struct enum_hash
+        {
+            std::size_t operator()(Foo::Enum value) const
+            {
+                return std::hash<ctti::meta::type_t<std::underlying_type<Foo::Enum>>>()(
+                    static_cast<ctti::meta::type_t<std::underlying_type<Foo::Enum>>>(value)
+                );
+            }
+        };
+
         std::vector<int> a{1, 2, 3, 4};
-        std::unordered_map<Enum, std::string> b{ {Enum::A, "A"}, {Enum::B, "B"} };
+        std::unordered_map<Enum, std::string, enum_hash> b{ {Enum::A, "A"}, {Enum::B, "B"} };
 
         using ctti_model = ctti::model<symbols::a, symbols::b>;
     };
