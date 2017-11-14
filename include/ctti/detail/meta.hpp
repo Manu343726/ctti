@@ -2,7 +2,8 @@
 #define CTTI_UTILITY_META_H
 
 #include <type_traits>
-#include <cstdint>
+#include <cstddef>
+#include <array>
 
 namespace ctti
 {
@@ -794,6 +795,24 @@ namespace meta
     };
     template<typename Seq>
     using to_index_sequence_t = type_t<to_index_sequence<Seq>>;
+
+    template<typename Seq>
+    using make_index_sequence_from_sequence = ctti::meta::functor_t<ctti::meta::list<>, ctti::meta::to_index_sequence_t<Seq>>;
+
+    namespace detail
+    {
+        template<typename Function, typename... Ts, std::size_t... Indices>
+        void foreach(ctti::meta::list<Ts...>, ctti::meta::index_sequence<Indices...>, Function function)
+        {
+            [](...){}(std::array<int, sizeof...(Ts) + 1>{(function(ctti::meta::identity<Ts>(), ctti::meta::size_t<Indices>()), 0)..., 0});
+        }
+    }
+
+    template<typename Sequence, typename Function>
+    void foreach(Function function)
+    {
+        ctti::meta::detail::foreach(ctti::meta::apply_functor<ctti::meta::list<>, Sequence>(), ctti::meta::make_index_sequence_from_sequence<Sequence>(), function);
+    }
 }
 
 }

@@ -60,6 +60,7 @@ def parse(project_includedir, libclang_lib):
     index = Index.create()
     values = {};
     processed_files = [];
+    abs_project_includedir = os.path.abspath(project_includedir)
 
     valid_kinds = [
         CursorKind.NAMESPACE,
@@ -79,6 +80,32 @@ def parse(project_includedir, libclang_lib):
         "",
         "static_assert", # An static assert expression is parsed as a CXX METHOD, lol
         "std",
+        "hash",
+        "get_member",
+        "value_type",
+        "member_type",
+        "MOCK_METHOD0",
+        "MOCK_METHOD1",
+        "MOCK_METHOD2",
+        "MOCK_METHOD3",
+        "MOCK_METHOD4",
+        "MOCK_METHOD5",
+        "MOCK_METHOD6",
+        "MOCK_METHOD7",
+        "MOCK_METHOD8",
+        "MOCK_METHOD9",
+        "MOCK_METHOD10",
+        "MOCK_CONST_METHOD0",
+        "MOCK_CONST_METHOD1",
+        "MOCK_CONST_METHOD2",
+        "MOCK_CONST_METHOD3",
+        "MOCK_CONST_METHOD4",
+        "MOCK_CONST_METHOD5",
+        "MOCK_CONST_METHOD6",
+        "MOCK_CONST_METHOD7",
+        "MOCK_CONST_METHOD8",
+        "MOCK_CONST_METHOD9",
+        "MOCK_CONST_METHOD10",
         "operator()",
         "operator+",
         "operator++",
@@ -89,9 +116,11 @@ def parse(project_includedir, libclang_lib):
         "operator<",
         "operator<=",
         "operator<<",
+        "operator<<=",
         "operator>",
         "operator>=",
         "operator>>",
+        "operator>>=",
         "operator=",
         "operator*=",
         "operator->",
@@ -99,17 +128,44 @@ def parse(project_includedir, libclang_lib):
         "operator==",
         "operator!=",
         "operator~",
+        "operator^",
+        "operator^=",
+        "operator%",
+        "operator%=",
+        "operator|",
+        "operator|=",
+        "operator||",
+        "operator&",
+        "operator&=",
+        "operator&&",
+        "operator[]",
+        "operator/",
+        "operator/=",
+        "operator!",
+        "operator!="
     ];
 
+    print 'project include dir: ' + abs_project_includedir
+
     def visitor(cursor):
-        if cursor.spelling not in invalid_names and \
+        if cursor.kind == CursorKind.TRANSLATION_UNIT:
+            abs_file = os.path.abspath(str(cursor.spelling))
+        else:
+            if cursor.location.file is not None:
+                abs_file = os.path.abspath(str(cursor.location.file))
+            else:
+                abs_file = ""
+
+        common_path = os.path.commonprefix([abs_file, abs_project_includedir])
+
+        if common_path == abs_project_includedir and cursor.spelling not in invalid_names and \
                 cursor.kind in valid_kinds and \
                 cursor.spelling not in values:
             print '{}# {}:{}: {} (Kind={})'.format(len(values), cursor.location.file, cursor.location.line, cursor.spelling, cursor.kind)
             values[cursor.spelling] = parse_cursor(cursor)
 
-        if (cursor.kind == CursorKind.TRANSLATION_UNIT and not cursor.location.file in processed_files) or \
-                cursor.kind != CursorKind.TRANSLATION_UNIT:
+        if common_path == abs_project_includedir and ((cursor.kind == CursorKind.TRANSLATION_UNIT and (not cursor.location.file in processed_files)) or \
+                cursor.kind != CursorKind.TRANSLATION_UNIT):
             for c in cursor.get_children():
                 visitor(c)
 

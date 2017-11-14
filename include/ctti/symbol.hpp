@@ -31,6 +31,10 @@
             static constexpr member_type get_member() {                      \
                 return nullptr;                                              \
             }                                                                \
+                                                                             \
+            static constexpr ctti::detail::cstring member_name() {           \
+                return CTTI_PP_STR(name);                                    \
+            }                                                                \
         };                                                                   \
                                                                              \
         template<typename T>                                                 \
@@ -44,6 +48,10 @@
             static constexpr member_type get_member() {                      \
                 return &T::name;                                             \
             }                                                                \
+                                                                             \
+            static constexpr ctti::detail::cstring member_name() {           \
+                return ctti::nameof<CTTI_STATIC_VALUE(&T::name)>();          \
+            }                                                                \
         };                                                                   \
                                                                              \
         template<typename T>                                                 \
@@ -56,6 +64,10 @@
                                                                              \
             static constexpr member_type get_member() {                      \
                 return T::name;                                              \
+            }                                                                \
+                                                                             \
+            static constexpr ctti::detail::cstring member_name() {           \
+                return CTTI_PP_STR(name);                                    \
             }                                                                \
         };                                                                   \
                                                                              \
@@ -75,6 +87,11 @@
         template<typename T>                                                 \
         static constexpr ctti::name_t detailed_name() {                      \
             return ctti::detailed_nameof<CTTI_STATIC_VALUE(get_member<T>())>(); \
+        }                                                                    \
+                                                                             \
+        template<typename T>                                                 \
+        static constexpr ctti::detail::cstring member_name() {               \
+            return impl<T>::member_name();                                   \
         }                                                                    \
                                                                              \
         template<typename T>                                                 \

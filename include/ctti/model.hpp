@@ -15,7 +15,7 @@ struct model
 };
 
 template<typename T>
-constexpr ctti::model<> ctti_model(ctti::type_tag<T>);
+ctti::model<> ctti_model(ctti::type_tag<T>);
 
 namespace detail
 {
