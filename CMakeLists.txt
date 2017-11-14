@@ -60,3 +60,5 @@ if(CTTI_BUILD_EXAMPLES)
     add_subdirectory(examples)
 endif()
 
+add_library(ctti INTERFACE)
+target_include_directories(ctti INTERFACE ${CTTI_SOURCE_DIR}/include)
