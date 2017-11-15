@@ -5,6 +5,8 @@
 #include <ctti/model.hpp>
 #include <vector>
 #include <unordered_map>
+#include <array>
+#include <tuple>
 
 namespace ctti
 {
@@ -229,6 +231,24 @@ struct json_formatter
         out.write("]");
     }
 
+    template<typename Output, typename T, std::size_t Size>
+    void value(Output& out, const std::array<T, Size>& array)
+    {
+        out.write("[");
+
+        for(std::size_t i = 0; i < array.size(); ++i)
+        {
+            ctti::serialization::serialize(*this, out, array[i]);
+
+            if(i + 1 < array.size())
+            {
+                out.write(", ");
+            }
+        }
+
+        out.write("]");
+    }
+
     template<typename Output, typename Key, typename Value, typename Hash>
     void value(Output& out, const std::unordered_map<Key, Value, Hash>& map)
     {
@@ -254,7 +274,34 @@ struct json_formatter
         out.write("]");
     }
 
+    template<typename Output, typename... Ts>
+    void value(Output& out, const std::tuple<Ts...>& tuple)
+    {
+        out.write("(");
+        ctti::meta::foreach<std::tuple<Ts...>>(tuple_loop_body_t<Output, Ts...>{&tuple, this, &out});
+        out.write(")");
+    }
+
 private:
+    template<typename Output, typename... Ts>
+    struct tuple_loop_body_t
+    {
+        const std::tuple<Ts...>* tuple;
+        json_formatter* self;
+        Output* out;
+
+        template<typename T, std::size_t Index>
+        void operator()(ctti::meta::identity<T>, ctti::meta::size_t<Index>) const
+        {
+            ctti::serialization::serialize(*self, *out, std::get<Index>(*tuple));
+
+            if(Index + 1 < sizeof...(Ts))
+            {
+                out->write(", ");
+            }
+        }
+    };
+
     template<typename Output, typename T>
     void write_value(Output& out, const T& value, ctti::meta::true_)
     {

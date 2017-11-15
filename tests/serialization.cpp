@@ -37,8 +37,9 @@ struct Foo
 
         std::vector<int> a{1, 2, 3, 4};
         std::unordered_map<Enum, std::string, enum_hash> b{ {Enum::A, "A"}, {Enum::B, "B"} };
+        std::array<std::tuple<int, int>, 2> c{ std::make_tuple(1, 2), std::make_tuple(3, 4)};
 
-        using ctti_model = ctti::model<symbols::a, symbols::b>;
+        using ctti_model = ctti::model<symbols::a, symbols::b, symbols::c>;
     };
 
     Bar d;
@@ -58,7 +59,7 @@ TEST_CASE("serialization")
     SECTION("json formatter")
     {
         ctti::serialization::serialize(ctti::serialization::json_formatter(), ctti::serialization::ostream_otuput(ss), foo);
-        REQUIRE(ss.str() == R"({"a": 42, "b": "42", "c": A, "d": {"a": [1, 2, 3, 4], "b": [{B: "B"}, {A: "A"}]}})");
+        REQUIRE(ss.str() == R"({"a": 42, "b": "42", "c": A, "d": {"a": [1, 2, 3, 4], "b": [{B: "B"}, {A: "A"}], "c": [(1, 2), (3, 4)]}})");
         ss.str("");
     }
 
@@ -66,7 +67,7 @@ TEST_CASE("serialization")
     {
         std::ostringstream ss;
         ss << foo;
-        REQUIRE(ss.str() == R"({"a": 42, "b": "42", "c": A, "d": {"a": [1, 2, 3, 4], "b": [{B: "B"}, {A: "A"}]}})");
+        REQUIRE(ss.str() == R"({"a": 42, "b": "42", "c": A, "d": {"a": [1, 2, 3, 4], "b": [{B: "B"}, {A: "A"}], "c": [(1, 2), (3, 4)]}})");
         ss.str("");
 
         ss << Foo::Enum::A;
