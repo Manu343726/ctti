@@ -44,15 +44,32 @@ struct Foo
     Bar d;
 
     using ctti_model = ctti::model<symbols::a, symbols::b, symbols::c, symbols::d>;
+    void ctti_ostream_print();
 };
 
 ctti::model<symbols::A, symbols::B> ctti_model(ctti::type_tag<Foo::Enum>);
+void ctti_ostream_print(ctti::type_tag<Foo::Enum>);
 
 TEST_CASE("serialization")
 {
     Foo foo{42, "42", Foo::Enum::A};
     std::ostringstream ss;
 
-    ctti::serialization::serialize(ctti::serialization::json_formatter(), ctti::serialization::ostream_otuput(ss), foo);
-    REQUIRE(ss.str() == R"({"a": 42, "b": "42", "c": A, "d": {"a": [1, 2, 3, 4], "b": [{B: "B"}, {A: "A"}]}})");
+    SECTION("json formatter")
+    {
+        ctti::serialization::serialize(ctti::serialization::json_formatter(), ctti::serialization::ostream_otuput(ss), foo);
+        REQUIRE(ss.str() == R"({"a": 42, "b": "42", "c": A, "d": {"a": [1, 2, 3, 4], "b": [{B: "B"}, {A: "A"}]}})");
+        ss.str("");
+    }
+
+    SECTION("default ostream print")
+    {
+        std::ostringstream ss;
+        ss << foo;
+        REQUIRE(ss.str() == R"({"a": 42, "b": "42", "c": A, "d": {"a": [1, 2, 3, 4], "b": [{B: "B"}, {A: "A"}]}})");
+        ss.str("");
+
+        ss << Foo::Enum::A;
+        REQUIRE(ss.str() == "A");
+    }
 }

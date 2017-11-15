@@ -288,8 +288,30 @@ void serialize(Formatter formatter, Output output, const T& value)
     ctti::serialization::serialize(writer, value);
 }
 
+namespace detail
+{
+    template<typename T, bool HasModel = ctti::meta::list_size<ctti::get_model<T>>() == 0, typename = void>
+    struct is_default_ostream_serializable : public ctti::meta::false_ {};
+
+    template<typename T>
+    struct is_default_ostream_serializable<T, false, ctti::meta::void_t<decltype(T::ctti_ostream_print())>> : public ctti::meta::true_ {};
+
+    template<typename T>
+    struct is_default_ostream_serializable<T, false, ctti::meta::void_t<decltype(std::declval<T>().ctti_ostream_print())>> : public ctti::meta::true_ {};
+
+    template<typename T>
+    struct is_default_ostream_serializable<T, false, ctti::meta::void_t<decltype(ctti_ostream_print(std::declval<ctti::type_tag<T>>()))>> : public ctti::meta::true_ {};
 }
 
+}
+
+}
+
+template<typename T>
+ctti::meta::enable_if_t<ctti::serialization::detail::is_default_ostream_serializable<T>::value, std::ostream&> operator<<(std::ostream& os, const T& value)
+{
+    ctti::serialization::serialize(ctti::serialization::json_formatter(), ctti::serialization::ostream_otuput(os), value);
+    return os;
 }
 
 #endif // CTTI_SERIALIZATION_HPP
