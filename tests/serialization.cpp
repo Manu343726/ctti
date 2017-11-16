@@ -73,4 +73,11 @@ TEST_CASE("serialization")
         ss << Foo::Enum::A;
         REQUIRE(ss.str() == "A");
     }
+
+    SECTION("json writer")
+    {
+        nlohmann::json json;
+        ctti::serialization::serialize(ctti::serialization::json_writer(json), foo);
+        REQUIRE(json.dump() == R"({"a":42,"b":"42","c":"A","d":{"a":[1,2,3,4],"b":[[1,"B"],[0,"A"]],"c":[[1,2],[3,4]]}})");
+    }
 }

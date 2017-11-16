@@ -3,6 +3,7 @@
 
 #include <ctti/symbol.hpp>
 #include <ctti/model.hpp>
+#include <ctti/detail/nlohmann_json.hpp>
 #include <vector>
 #include <unordered_map>
 #include <array>
@@ -16,6 +17,9 @@ namespace serialization
 
 template<typename Formatter, typename Output, typename T>
 void serialize(Formatter formatter, Output& output, const T& value);
+
+template<typename Writer, typename T>
+void serialize(Writer writer, const T& value);
 
 namespace detail
 {
@@ -315,8 +319,60 @@ private:
     }
 };
 
+struct json_writer
+{
+    json_writer(nlohmann::json& current_object) :
+        _current_object{&current_object}
+    {}
+
+    template<typename T>
+    ctti::meta::enable_if_t<ctti::has_model<T>::value> value(const std::string& name, const T& value)
+    {
+        ctti::serialization::serialize(json_writer((*_current_object)[name]), value);
+    }
+
+    template<typename T>
+    ctti::meta::enable_if_t<!ctti::has_model<T>::value> value(const std::string& name, const T& value)
+    {
+        (*_current_object)[name] = nlohmann::json(value);
+    }
+
+    template<typename T>
+    void raw_value(const T& value)
+    {
+        *_current_object = nlohmann::json(value);
+    }
+
+    template<typename T>
+    ctti::meta::enable_if_t<ctti::has_model<T>::value> value(const T& value)
+    {
+        ctti::serialization::serialize(json_writer(*_current_object), value);
+    }
+
+    template<typename T>
+    ctti::meta::enable_if_t<!ctti::has_model<T>::value> value(const T& value)
+    {
+        raw_value(value);
+    }
+
+    template<typename T>
+    void begin_object(const T& object)
+    {
+    }
+
+    template<typename T>
+    void end_object(const T& object)
+    {
+    }
+
+    void value_separator() {}
+
+private:
+    nlohmann::json* _current_object;
+};
+
 template<typename Writer, typename T>
-void serialize(Writer& writer, const T& value)
+void serialize(Writer writer, const T& value)
 {
     ctti::serialization::detail::serialize<T>::apply(writer, value);
 }

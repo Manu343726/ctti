@@ -35,6 +35,11 @@ namespace detail
 template<typename T>
 using get_model = typename ctti::detail::get_model<T>::type;
 
+template<typename T>
+struct has_model : public ctti::meta::bool_<
+    (ctti::meta::list_size<ctti::get_model<T>>() > 0)
+> {};
+
 }
 
 #endif // CTTI_MODEL_HPP
