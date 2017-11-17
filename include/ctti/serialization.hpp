@@ -21,6 +21,9 @@ void serialize(Formatter formatter, Output& output, const T& value);
 template<typename Writer, typename T>
 void serialize(Writer writer, const T& value);
 
+template<typename Reader, typename T>
+void deserialize(Reader reader, T& value);
+
 namespace detail
 {
     template<typename T, bool IsEnum = std::is_enum<T>(), bool EmptyModel = ctti::meta::list_size<ctti::get_model<T>>() == 0>
@@ -99,6 +102,103 @@ namespace detail
         static void apply(Writer& writer, const T& value)
         {
             writer.value(value);
+        }
+    };
+
+    template<typename T, bool IsEnum = std::is_enum<T>::value, bool HasModel = ctti::has_model<T>::value>
+    struct deserialize
+    {
+        using Model = ctti::get_model<T>;
+
+        template<typename Reader>
+        struct loop_body
+        {
+            Reader* reader;
+            T* value;
+
+            template<typename SymbolIdentity, typename Index>
+            void operator()(SymbolIdentity, Index)
+            {
+                using Symbol = ctti::meta::type_t<SymbolIdentity>;
+                reader->value(Symbol::symbol().str(), ctti::get_member_value<Symbol>(*value));
+            }
+        };
+
+        template<typename Reader>
+        static void apply(Reader& reader, T& value)
+        {
+            loop_body<Reader> loop_body{&reader, &value};
+            ctti::meta::foreach<Model>(loop_body);
+        }
+    };
+
+    template<typename T>
+    struct deserialize<T, true, true>
+    {
+        using Model = ctti::get_model<T>;
+
+        template<typename InputValue, typename ValueType = T>
+        struct loop_body
+        {
+            T* value;
+            InputValue input_value;
+
+            template<typename SymbolIdentity, typename Index>
+            void operator()(SymbolIdentity, Index)
+            {
+                using Symbol = ctti::meta::type_t<SymbolIdentity>;
+
+                if(static_cast<typename std::underlying_type<T>::type>(Symbol::template get_member<T>()) ==
+                   static_cast<typename std::underlying_type<T>::type>(input_value))
+                {
+                    *value = Symbol::template get_member<T>();
+                }
+            }
+        };
+
+        template<typename ValueType>
+        struct loop_body<std::string, ValueType>
+        {
+            T* value;
+            std::string input_value;
+
+            template<typename SymbolIdentity, typename Index>
+            void operator()(SymbolIdentity, Index)
+            {
+                using Symbol = ctti::meta::type_t<SymbolIdentity>;
+
+                if(Symbol::symbol().str() == input_value)
+                {
+                    *value = Symbol::template get_member<T>();
+                }
+            }
+        };
+
+        struct callback
+        {
+            template<typename InputValue>
+            T operator()(const InputValue& input_value)
+            {
+                T output_value{};
+                ctti::meta::foreach<Model>(loop_body<InputValue>{&output_value, input_value});
+                return output_value;
+            }
+        };
+
+        template<typename Reader>
+        static void apply(Reader& reader, T& value)
+        {
+            reader.enum_value(value, callback());
+        }
+    };
+
+    template<typename T, bool IsEnum>
+    struct deserialize<T, IsEnum, false>
+    {
+        template<typename Reader>
+        static void apply(Reader& reader, T& value)
+        {
+            reader.value(value);
         }
     };
 }
@@ -371,6 +471,89 @@ private:
     nlohmann::json* _current_object;
 };
 
+struct json_reader
+{
+    json_reader(const nlohmann::json& json) :
+        _current_object{&json}
+    {}
+
+    template<typename T>
+    ctti::meta::enable_if_t<ctti::has_model<T>::value> value(T& value)
+    {
+        ctti::serialization::deserialize(json_reader(*_current_object), value);
+    }
+
+    template<typename T>
+    ctti::meta::enable_if_t<!ctti::has_model<T>::value> value(T& value)
+    {
+        value = _current_object->get<T>();
+    }
+
+    template<typename T, typename Function>
+    void enum_value(T& value, Function callback)
+    {
+        if(_current_object->is_number())
+        {
+            value = callback(_current_object->get<typename std::underlying_type<T>::type>());
+        }
+        else if(_current_object->is_string())
+        {
+            value = callback(_current_object->get<std::string>());
+        }
+    }
+
+    template<typename T>
+    ctti::meta::enable_if_t<ctti::has_model<T>::value> value(const std::string& name, T& value)
+    {
+        ctti::serialization::deserialize(json_reader((*_current_object)[name]), value);
+    }
+
+    template<typename T>
+    ctti::meta::enable_if_t<!ctti::has_model<T>::value> value(const std::string& name, T& value)
+    {
+        auto subobject = (*_current_object)[name];
+        value = subobject.get<T>();
+    }
+
+    template<typename Key, typename Value, typename Hash>
+    void value(const std::string& name, std::unordered_map<Key, Value, Hash>& map)
+    {
+        value((*_current_object)[name], map);
+    }
+
+    template<typename Key, typename Value, typename Hash>
+    void value(std::unordered_map<Key, Value, Hash>& map)
+    {
+        value(*_current_object, map);
+    }
+
+private:
+    const nlohmann::json* _current_object;
+
+    template<typename Key, typename Value, typename Hash>
+    void value(const nlohmann::json& json, std::unordered_map<Key, Value, Hash>& map)
+    {
+        assert(json.is_array());
+
+        for(const auto& key_value_object : json)
+        {
+            // maps are serialized as key, value arrays, where key value pairs are arrays too
+            assert(key_value_object.is_array());
+            assert(key_value_object.size() == 2);
+
+            const auto& key = key_value_object[0];
+            const auto& value = key_value_object[1];
+
+            Key deserialized_key;
+            Value deserialized_value;
+            ctti::serialization::deserialize(json_reader(key), deserialized_key);
+            ctti::serialization::deserialize(json_reader(value), deserialized_value);
+
+            map[std::move(deserialized_key)] = std::move(deserialized_value);
+        }
+    }
+};
+
 template<typename Writer, typename T>
 void serialize(Writer writer, const T& value)
 {
@@ -389,6 +572,12 @@ void serialize(Formatter formatter, Output output, const T& value)
 {
     auto writer = ctti::serialization::make_writer(formatter, output);
     ctti::serialization::serialize(writer, value);
+}
+
+template<typename Reader, typename T>
+void deserialize(Reader reader, T& value)
+{
+    ctti::serialization::detail::deserialize<T>::apply(reader, value);
 }
 
 namespace detail

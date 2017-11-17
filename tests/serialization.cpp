@@ -80,4 +80,34 @@ TEST_CASE("serialization")
         ctti::serialization::serialize(ctti::serialization::json_writer(json), foo);
         REQUIRE(json.dump() == R"({"a":42,"b":"42","c":"A","d":{"a":[1,2,3,4],"b":[[1,"B"],[0,"A"]],"c":[[1,2],[3,4]]}})");
     }
+
+    SECTION("json reader enum as int")
+    {
+        auto json = nlohmann::json::parse(R"({"a":42,"b":"42","c":"A","d":{"a":[1,2,3,4],"b":[[1,"B"],[0,"A"]],"c":[[1,2],[3,4]]}})");
+        Foo foo2;
+        ctti::serialization::deserialize(ctti::serialization::json_reader(json), foo2);
+        REQUIRE(foo2.a == 42);
+        REQUIRE(foo2.b == "42");
+        REQUIRE(foo2.c == Foo::Enum::A);
+        REQUIRE(foo2.d.a == std::vector<int>{1, 2, 3, 4});
+        REQUIRE(foo2.d.b.size() == 2);
+        REQUIRE(foo2.d.b.at(Foo::Enum::A) == "A");
+        REQUIRE(foo2.d.b.at(Foo::Enum::B) == "B");
+        REQUIRE(foo2.d.c == std::array<std::tuple<int, int>, 2>{ std::make_tuple(1, 2), std::make_tuple(3, 4)});
+    }
+
+    SECTION("json reader enum as string")
+    {
+        auto json = nlohmann::json::parse(R"({"a":42,"b":"42","c":"A","d":{"a":[1,2,3,4],"b":[["B","B"],["A","A"]],"c":[[1,2],[3,4]]}})");
+        Foo foo2;
+        ctti::serialization::deserialize(ctti::serialization::json_reader(json), foo2);
+        REQUIRE(foo2.a == 42);
+        REQUIRE(foo2.b == "42");
+        REQUIRE(foo2.c == Foo::Enum::A);
+        REQUIRE(foo2.d.a == std::vector<int>{1, 2, 3, 4});
+        REQUIRE(foo2.d.b.size() == 2);
+        REQUIRE(foo2.d.b.at(Foo::Enum::A) == "A");
+        REQUIRE(foo2.d.b.at(Foo::Enum::B) == "B");
+        REQUIRE(foo2.d.c == std::array<std::tuple<int, int>, 2>{ std::make_tuple(1, 2), std::make_tuple(3, 4)});
+    }
 }
