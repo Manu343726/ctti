@@ -554,6 +554,53 @@ private:
     }
 };
 
+struct enum_from_string_reader
+{
+    enum_from_string_reader(const std::string& input) :
+        _input{input}
+    {}
+
+    template<typename T, typename Callback>
+    void enum_value(T& value, Callback callback)
+    {
+        value = callback(_input);
+    }
+
+private:
+    std::string _input;
+};
+
+struct enum_to_string_writer
+{
+    enum_to_string_writer(std::string& output) :
+        _output{&output}
+    {}
+
+    void raw_value(const std::string& enum_value)
+    {
+        *_output = enum_value;
+    }
+
+private:
+    std::string* _output;
+};
+
+template<typename Enum>
+ctti::meta::enable_if_t<ctti::has_model<Enum>::value && std::is_enum<Enum>::value, std::string> enum_to_string(const Enum value)
+{
+    std::string output;
+    ctti::serialization::serialize(ctti::serialization::enum_to_string_writer(output), value);
+    return output;
+}
+
+template<typename Enum>
+ctti::meta::enable_if_t<ctti::has_model<Enum>::value && std::is_enum<Enum>::value, Enum> enum_from_string(const std::string& enum_string)
+{
+    Enum enum_value{};
+    ctti::serialization::deserialize(ctti::serialization::enum_from_string_reader(enum_string), enum_value);
+    return enum_value;
+}
+
 template<typename Writer, typename T>
 void serialize(Writer writer, const T& value)
 {

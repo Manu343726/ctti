@@ -56,6 +56,18 @@ TEST_CASE("serialization")
     Foo foo{42, "42", Foo::Enum::A};
     std::ostringstream ss;
 
+    SECTION("enum to string")
+    {
+        REQUIRE(ctti::serialization::enum_to_string(Foo::Enum::A) == "A");
+        REQUIRE(ctti::serialization::enum_to_string(Foo::Enum::B) == "B");
+    }
+
+    SECTION("enum from string")
+    {
+        REQUIRE(ctti::serialization::enum_from_string<Foo::Enum>("A") == Foo::Enum::A);
+        REQUIRE(ctti::serialization::enum_from_string<Foo::Enum>("B") == Foo::Enum::B);
+    }
+
     SECTION("json formatter")
     {
         ctti::serialization::serialize(ctti::serialization::json_formatter(), ctti::serialization::ostream_otuput(ss), foo);
