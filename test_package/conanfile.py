@@ -8,13 +8,12 @@ channel = os.getenv('CONAN_CTTI_CHANNEL', 'testing')
 class TestCtti(ConanFile):
     settings = 'os', 'compiler', 'build_type', 'arch'
     requires = (
-        'ctti/{}@{}/{}'.format(version, user, channel),
-        'cmake-utils/0.0.0@Manu343726/testing'
+        'ctti/{}@{}/{}'.format(version, user, channel)
     )
     generators = 'cmake'
 
     def build(self):
-        cmake = CMake(self.settings)
+        cmake = CMake(self)
         self.run('cmake {} {}'.format(self.conanfile_directory, cmake.command_line))
         self.run('cmake --build . {}'.format(cmake.build_config))
 
