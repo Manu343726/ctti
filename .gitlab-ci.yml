@@ -1,0 +1,9 @@
+build-linux-ubuntu-gcc550:
+    stage: build
+    tags:
+      - linux
+      - ubuntu
+      - docker
+    image: gcc:5.5.0
+    script:
+      - gcc --version | grep 5.5.0 
