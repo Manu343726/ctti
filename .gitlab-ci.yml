@@ -2,7 +2,6 @@ build-linux-ubuntu-gcc550:
     stage: build
     tags:
       - linux
-      - ubuntu
       - docker
     image: gcc:5.5.0
     script:
@@ -16,7 +15,6 @@ test-linux-ubuntu-gcc550:
     stage: test
     tags:
       - linux
-      - ubuntu
       - docker
     image: gcc:5.5.0
     dependencies:
@@ -28,7 +26,6 @@ build-linux-ubuntu-gcc720:
     stage: build
     tags:
       - linux
-      - ubuntu
       - docker
     image: gcc:7.2.0
     script:
@@ -42,7 +39,6 @@ test-linux-ubuntu-gcc720:
     stage: test
     tags:
       - linux
-      - ubuntu
       - docker
     image: gcc:7.2.0
     dependencies:
