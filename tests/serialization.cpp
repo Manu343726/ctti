@@ -37,7 +37,7 @@ struct Foo
 
         std::vector<int> a{1, 2, 3, 4};
         std::unordered_map<Enum, std::string, enum_hash> b{ {Enum::A, "A"}, {Enum::B, "B"} };
-        std::array<std::tuple<int, int>, 2> c{ std::make_tuple(1, 2), std::make_tuple(3, 4)};
+        std::array<std::tuple<int, int>, 2> c{{std::make_tuple(1, 2), std::make_tuple(3, 4)}};
 
         using ctti_model = ctti::model<symbols::a, symbols::b, symbols::c>;
     };
