@@ -231,6 +231,9 @@ namespace meta
         static constexpr std::size_t size = sizeof...(Ts);
     };
 
+    template<typename... Ts>
+    constexpr std::size_t list<Ts...>::size;
+
     template<typename List>
     struct list_size;
 
