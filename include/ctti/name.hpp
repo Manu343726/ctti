@@ -15,7 +15,8 @@ struct name_t
 
     constexpr ctti::detail::cstring name() const
     {
-        return get_name(right(ctti::detail::find_last(_full_name, "::") + 2));
+        return ctti::detail::find_last(_full_name, "::") == _full_name.end() ?
+            _full_name : ctti::detail::cstring{ctti::detail::find_last(_full_name, "::") + 2, _full_name.end()};
     }
 
     constexpr ctti::detail::cstring full_name() const
@@ -33,15 +34,17 @@ struct name_t
         return (i > 0) ? get_qualifier(
             ctti::detail::find_ith(_full_name, "::", i - 1) + 2,
             ctti::detail::find_ith(_full_name, "::", i)
-        ) : left(ctti::detail::find_ith(_full_name, "::", i));
+        ) : (ctti::detail::find_ith(_full_name, "::", i) != _full_name.end()) ?
+            ctti::detail::cstring{_full_name.begin(), ctti::detail::find_ith(_full_name, "::", i)} :
+            ctti::detail::cstring{""};
     }
 
 private:
     ctti::detail::cstring _full_name;
 
-    constexpr ctti::detail::cstring right(const char* begin) const
+    constexpr ctti::detail::cstring right(const ctti::detail::cstring& str) const
     {
-        return {ctti::detail::min(_full_name.end(), begin), _full_name.end()};
+        return {ctti::detail::min(_full_name.end(), str.begin()), _full_name.end()};
     }
 
     constexpr ctti::detail::cstring left(const char* end) const
@@ -59,12 +62,12 @@ private:
 
     constexpr ctti::detail::cstring get_qualifier(const char* begin, const char* end) const
     {
-        return get_qualifier_impl(ctti::detail::min(begin, _full_name.end()), ctti::detail::min(end, _full_name.end()));
+        return get_qualifier_impl(begin, end);
     }
 
     constexpr ctti::detail::cstring get_qualifier_impl(const char* begin, const char* end) const
     {
-        return (begin > end || end >= _full_name.end()) ? ctti::detail::cstring{""} : ctti::detail::cstring{begin, end};
+        return (end == _full_name.end()) ? ctti::detail::cstring{""} : ctti::detail::cstring{begin, end};
     }
 };
 

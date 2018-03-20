@@ -3,7 +3,7 @@ add_library(ctti-static-tests
     cstring.cpp
     hash.cpp
     symbol.cpp
-    #model.cpp
+    name.cpp
 )
 
 if(NOT MSVC)
