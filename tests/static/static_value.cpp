@@ -1,0 +1,10 @@
+#include <ctti/static_value.hpp>
+#include "static_test.hpp"
+
+EXPECT_EQ(CTTI_STATIC_VALUE(42)::value, 42);
+EXPECT_EQ(CTTI_STATIC_VALUE(42){}.get(), 42);
+EXPECT_EQ(CTTI_STATIC_VALUE(42){}, 42);
+EXPECT_NE(CTTI_STATIC_VALUE(43){}, 42);
+EXPECT_EQ(42, CTTI_STATIC_VALUE(42){});
+EXPECT_NE(42, CTTI_STATIC_VALUE(43){});
+EXPECT_EQ(static_cast<int>(CTTI_STATIC_VALUE(42){}), 42);

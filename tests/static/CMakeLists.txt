@@ -4,6 +4,7 @@ add_library(ctti-static-tests
     hash.cpp
     symbol.cpp
     name.cpp
+    static_value.cpp
 )
 
 if(NOT MSVC)
