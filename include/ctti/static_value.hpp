@@ -42,6 +42,9 @@ struct static_value
     }
 };
 
+template<typename T, T Value>
+constexpr T static_value<T, Value>::value;
+
 }
 
 #define CTTI_STATIC_VALUE(x) ::ctti::static_value<decltype(x), (x)>
