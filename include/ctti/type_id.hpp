@@ -30,6 +30,10 @@ namespace ctti
             name_{name}
         {}
 
+        constexpr type_id_t() :
+            type_id_t{"void"}
+        {}
+
         type_id_t& operator=(const type_id_t&) = default;
 
         constexpr detail::hash_t hash() const
