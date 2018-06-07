@@ -7,6 +7,4 @@ add_library(ctti-static-tests
     static_value.cpp
 )
 
-if(NOT MSVC)
-    target_compile_options(ctti-static-tests PRIVATE -std=c++11)
-endif()
+target_link_libraries(ctti-static-tests PRIVATE ctti)
