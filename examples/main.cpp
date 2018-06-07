@@ -7,7 +7,7 @@ struct foo
     int i = 0;
 };
 
-int f(const std::string& str, int i)
+int f(const std::string&, int)
 {
     return 42;
 }

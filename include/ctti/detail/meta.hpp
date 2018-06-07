@@ -807,6 +807,7 @@ namespace meta
         template<typename Function, typename... Ts, std::size_t... Indices>
         void foreach(ctti::meta::list<Ts...>, ctti::meta::index_sequence<Indices...>, Function function)
         {
+            (void)function;
             [](...){}(std::array<int, sizeof...(Ts) + 1>{(function(ctti::meta::identity<Ts>(), ctti::meta::size_t<Indices>()), 0)..., 0});
         }
     }

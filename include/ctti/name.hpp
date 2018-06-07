@@ -71,6 +71,16 @@ private:
     }
 };
 
+constexpr bool operator==(const name_t& lhs, const name_t rhs)
+{
+    return lhs.full_name() == rhs.full_name();
+}
+
+constexpr bool operator!=(const name_t& lhs, const name_t rhs)
+{
+    return !(lhs == rhs);
+}
+
 }
 
 #endif // CTTI_NAME_HPP

@@ -9,6 +9,9 @@ include(cmake/vs_source_groups.cmake)
 set(CTTI_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 
 set(CMAKE_CXX_STANDARD 14)
+if(NOT MSVC)
+    set(CMAKE_CXX_FLAGS "-Wall -Wextra -Wall -Werror")
+endif()
 
 add_library(ctti INTERFACE)
 target_include_directories(ctti INTERFACE ${CTTI_SOURCE_DIR}/include)

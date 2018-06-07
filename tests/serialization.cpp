@@ -53,7 +53,7 @@ void ctti_ostream_print(ctti::type_tag<Foo::Enum>);
 
 TEST_CASE("serialization")
 {
-    Foo foo{42, "42", Foo::Enum::A};
+    Foo foo{42, "42", Foo::Enum::A, Foo::Bar{}};
     std::ostringstream ss;
 
     SECTION("enum to string")

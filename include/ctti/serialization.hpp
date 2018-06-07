@@ -288,13 +288,13 @@ struct json_formatter
     }
 
     template<typename Output, typename T>
-    void begin_object(Output& out, const T& object)
+    void begin_object(Output& out, const T&)
     {
         out.write("{");
     }
 
     template<typename Output, typename T>
-    void end_object(Output& out, const T& object)
+    void end_object(Output& out, const T&)
     {
         out.write("}");
     }
@@ -456,12 +456,12 @@ struct json_writer
     }
 
     template<typename T>
-    void begin_object(const T& object)
+    void begin_object(const T&)
     {
     }
 
     template<typename T>
-    void end_object(const T& object)
+    void end_object(const T&)
     {
     }
 

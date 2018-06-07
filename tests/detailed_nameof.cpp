@@ -115,7 +115,7 @@ TEST_CASE("detailed_nameof")
     SECTION("variable templates")
     {
         REQUIRE(detailed_nameof_v<int> == detailed_nameof<int>());
-        REQUIRE(detailed_nameof_value_v<int, 42> == detailed_nameof_value<int, 42>());
+        REQUIRE(detailed_nameof_value_v<int, 42> == detailed_nameof<int, 42>());
     }
 #endif // CTTI_HAS_VARIABLE_TEMPLATES
 }
