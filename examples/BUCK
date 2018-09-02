@@ -1,0 +1,9 @@
+cxx_binary(
+  name = 'examples',
+  srcs = [
+    'main.cpp',
+  ],
+  deps = [
+    '//:ctti',
+  ],
+)

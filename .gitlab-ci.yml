@@ -1,0 +1,47 @@
+build-linux-ubuntu-gcc550:
+    stage: build
+    tags:
+      - linux
+      - docker
+    image: gcc:5.5.0
+    script:
+      - gcc --version | tee gcc_version.txt
+    artifacts:
+      expire_in: 1 day
+      paths:
+        - gcc_version.txt
+
+test-linux-ubuntu-gcc550:
+    stage: test
+    tags:
+      - linux
+      - docker
+    image: gcc:5.5.0
+    dependencies:
+      - build-linux-ubuntu-gcc550
+    script:
+      - cat gcc_version.txt | grep 5.5.0
+
+build-linux-ubuntu-gcc720:
+    stage: build
+    tags:
+      - linux
+      - docker
+    image: gcc:7.2.0
+    script:
+      - gcc --version | tee gcc_version.txt
+    artifacts:
+      expire_in: 1 day
+      paths:
+        - gcc_version.txt
+
+test-linux-ubuntu-gcc720:
+    stage: test
+    tags:
+      - linux
+      - docker
+    image: gcc:7.2.0
+    dependencies:
+      - build-linux-ubuntu-gcc720
+    script:
+      - cat gcc_version.txt | grep 7.2.0
