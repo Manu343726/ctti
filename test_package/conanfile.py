@@ -14,8 +14,8 @@ class TestCtti(ConanFile):
 
     def build(self):
         cmake = CMake(self)
-        self.run('cmake {} {}'.format(self.conanfile_directory, cmake.command_line))
-        self.run('cmake --build . {}'.format(cmake.build_config))
+        cmake.configure()
+        cmake.build()
 
     def test(self):
         self.run(os.path.join('.', 'bin', 'example'))

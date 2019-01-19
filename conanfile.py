@@ -4,7 +4,7 @@ class Ctti(ConanFile):
     name = "ctti"
     url = "https::/github.com/Manu343726/ctti"
     license = "MIT"
-    version = "0.0.1"
+    version = "0.0.2"
     exports = "*.hpp"
     build_policy = "missing"
 
