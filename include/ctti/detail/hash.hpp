@@ -2,6 +2,7 @@
 #define CTTI_DETAIL_HASH_HPP
 
 #include <cstdint>
+#include <cstddef>
 
 namespace ctti
 {

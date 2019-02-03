@@ -42,7 +42,7 @@ template<typename Enum>
 struct TypeNameLength<Enum, typename std::enable_if<std::is_enum<Enum>::value>::type> :
     std::integral_constant<
         std::size_t,
-        ctti::nameof<Enum>().length()
+        ctti::nameof<Enum>().size() //fix compiler crash in VS2015 (this template specialization cannot match the top specialization)
     >
 {};
 
