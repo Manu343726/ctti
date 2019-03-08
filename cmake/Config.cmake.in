@@ -1,0 +1,4 @@
+set(CTTI_VERSION "@CTTI_VERSION@")
+
+@PACKAGE_INIT@
+include("${CMAKE_CURRENT_LIST_DIR}/cttiTargets.cmake")
