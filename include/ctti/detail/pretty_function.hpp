@@ -46,7 +46,10 @@ constexpr ctti::detail::cstring value()
     #define CTTI_TYPE_PRETTY_FUNCTION_PREFIX "constexpr ctti::detail::cstring ctti::pretty_function::type() [with T = "
     #define CTTI_TYPE_PRETTY_FUNCTION_SUFFIX "]"
 #elif defined(_MSC_VER)
-    #define CTTI_TYPE_PRETTY_FUNCTION_PREFIX "struct ctti::detail::cstring __cdecl ctti::pretty_function::type<"
+    #define CTTI_TYPE_PRETTY_FUNCTION_PREFIX "struct ctti::detail::cstring __cdecl ctti::pretty_function::type"
+#if (_MSC_VER < 1924)
+    #define CTTI_TYPE_PRETTY_FUNCTION_PREFIX CTTI_TYPE_PRETTY_FUNCTION_PREFIX "<"
+#endif
     #define CTTI_TYPE_PRETTY_FUNCTION_SUFFIX ">(void)"
 #else
     #error "No support for this compiler."
